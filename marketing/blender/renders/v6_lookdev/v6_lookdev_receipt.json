@@ -1,0 +1,86 @@
+{
+  "blender_version": "5.2.1 LTS",
+  "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU (OPTIX)",
+  "resolution": [
+    1920,
+    1080
+  ],
+  "samples": 96,
+  "blend_file": "c:\\Users\\kyle\\MPS\\slotted-liner\\marketing\\blender\\scenes\\laser_slotted_liner_teaser_v6.blend",
+  "blend_sha256": "a67779c7871c3f1bb3938b414d94e811385e13b525d2f73021db17ab4f31d9d9",
+  "audit": {
+    "pipe_dimensions_m": [
+      9.0,
+      0.1778,
+      0.1778
+    ],
+    "coupling_dimensions_m": [
+      0.27,
+      0.1945,
+      0.1945
+    ],
+    "protector_dimensions_m": [
+      0.21,
+      0.1955,
+      0.1955
+    ],
+    "sleek_stage_dimensions_m": [
+      0.447,
+      0.02,
+      0.024
+    ],
+    "stealth_shuttle_dimensions_m": [
+      0.28,
+      0.0683,
+      0.0763
+    ],
+    "horizontal_pipe_span_fraction": 0.9025,
+    "projections": {
+      "left_red_coupling": {
+        "ndc_x": 0.0473,
+        "ndc_y": 0.4752,
+        "depth_m": 23.729
+      },
+      "center_top_spine": {
+        "ndc_x": 0.5,
+        "ndc_y": 0.491,
+        "depth_m": 23.729
+      },
+      "right_red_protector": {
+        "ndc_x": 0.9498,
+        "ndc_y": 0.4752,
+        "depth_m": 23.729
+      },
+      "stealth_laser_shuttle": {
+        "ndc_x": 0.5,
+        "ndc_y": 0.4945,
+        "depth_m": 23.729
+      },
+      "sleek_linear_stage_bar": {
+        "ndc_x": 0.5,
+        "ndc_y": 0.5035,
+        "depth_m": 23.729
+      }
+    }
+  },
+  "renders": {
+    "beat1_stillness": {
+      "frame": 45,
+      "path": "c:\\Users\\kyle\\MPS\\slotted-liner\\marketing\\blender\\renders\\v6_lookdev\\beat1_stillness_f045.png",
+      "bytes": 1616403,
+      "sha256": "81d5b85b9d2181610feb3f58e9d083f60cdbebc5dbd0253475379166a7542b1d"
+    },
+    "beat2_laser_strike": {
+      "frame": 76,
+      "path": "c:\\Users\\kyle\\MPS\\slotted-liner\\marketing\\blender\\renders\\v6_lookdev\\beat2_laser_strike_f076.png",
+      "bytes": 1616296,
+      "sha256": "01daa455781266dec03773383eee8966e3a9af9658cf7084770312bab2951fb6"
+    },
+    "beat3_afterglow": {
+      "frame": 105,
+      "path": "c:\\Users\\kyle\\MPS\\slotted-liner\\marketing\\blender\\renders\\v6_lookdev\\beat3_afterglow_f105.png",
+      "bytes": 1615129,
+      "sha256": "fa6d1bb3c19103b3552108ccdef48d5442b12454c93572c344608f387515e835"
+    }
+  }
+}

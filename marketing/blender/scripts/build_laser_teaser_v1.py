@@ -156,26 +156,92 @@ def build_materials() -> dict[str, bpy.types.Material]:
     nt_r.links.new(bevel_r.outputs["Normal"], bsdf_r.inputs["Normal"])
     mats["red"] = mat_red
 
-    # 4. Sleek Precision Linear Stage Shroud (Anodized Dark Graphite — crisp machined finish)
-    mat_shroud = bpy.data.materials.new("Mystery_Laser_Shroud")
-    nt_s = mat_shroud.node_tree
-    bsdf_s = get_node_by_type(nt_s, "ShaderNodeBsdfPrincipled")
-    bsdf_s.inputs["Base Color"].default_value = (0.009, 0.010, 0.013, 1.0)
-    bsdf_s.inputs["Metallic"].default_value = 0.78
-    bsdf_s.inputs["Roughness"].default_value = 0.34
-    bevel_s = nt_s.nodes.new("ShaderNodeBevel")
-    bevel_s.inputs["Radius"].default_value = 0.0008
-    bevel_s.samples = 4
-    nt_s.links.new(bevel_s.outputs["Normal"], bsdf_s.inputs["Normal"])
-    mats["shroud"] = mat_shroud
+    # 4. Look-Dev v6 Precision Linear Guide Rail (Hardened ground tool steel with longitudinal anisotropic sheen)
+    mat_rail = bpy.data.materials.new("Linear_Rail_Steel")
+    nt_rl = mat_rail.node_tree
+    bsdf_rl = get_node_by_type(nt_rl, "ShaderNodeBsdfPrincipled")
+    bsdf_rl.inputs["Base Color"].default_value = (0.016, 0.018, 0.022, 1.0)
+    bsdf_rl.inputs["Metallic"].default_value = 0.85
+    bsdf_rl.inputs["Roughness"].default_value = 0.40
+    bsdf_rl.inputs["Anisotropic"].default_value = 0.80
+    bsdf_rl.inputs["Anisotropic Rotation"].default_value = 0.0
+    bevel_rl = nt_rl.nodes.new("ShaderNodeBevel")
+    bevel_rl.inputs["Radius"].default_value = 0.0006
+    bevel_rl.samples = 4
+    nt_rl.links.new(bevel_rl.outputs["Normal"], bsdf_rl.inputs["Normal"])
+    mats["rail"] = mat_rail
 
-    # 5. Indistinguishable Tiny Laser Emitter Collar (Matte dark anodized carbon — zero specular streak)
+    # 4b. Look-Dev v6 Aerospace CNC Machined Billet Carriage Plate (Deep hard-anodized dark graphite aluminum)
+    mat_carriage = bpy.data.materials.new("Laser_Carriage_Billet")
+    nt_c = mat_carriage.node_tree
+    bsdf_c = get_node_by_type(nt_c, "ShaderNodeBsdfPrincipled")
+    bsdf_c.inputs["Base Color"].default_value = (0.010, 0.011, 0.014, 1.0)
+    bsdf_c.inputs["Metallic"].default_value = 0.82
+    bsdf_c.inputs["Roughness"].default_value = 0.48
+    bevel_c = nt_c.nodes.new("ShaderNodeBevel")
+    bevel_c.inputs["Radius"].default_value = 0.0008
+    bevel_c.samples = 4
+    nt_c.links.new(bevel_c.outputs["Normal"], bsdf_c.inputs["Normal"])
+    mats["carriage"] = mat_carriage
+    mats["shroud"] = mat_carriage  # Backward-compatible alias
+
+    # 4c. Look-Dev v6 Linear Runner Blocks (Ground bearing steel body - dark oxide)
+    mat_steel = bpy.data.materials.new("Linear_Runner_Steel")
+    nt_st = mat_steel.node_tree
+    bsdf_st = get_node_by_type(nt_st, "ShaderNodeBsdfPrincipled")
+    bsdf_st.inputs["Base Color"].default_value = (0.014, 0.015, 0.018, 1.0)
+    bsdf_st.inputs["Metallic"].default_value = 0.85
+    bsdf_st.inputs["Roughness"].default_value = 0.42
+    bevel_st = nt_st.nodes.new("ShaderNodeBevel")
+    bevel_st.inputs["Radius"].default_value = 0.0005
+    bevel_st.samples = 4
+    nt_st.links.new(bevel_st.outputs["Normal"], bsdf_st.inputs["Normal"])
+    mats["steel"] = mat_steel
+
+    # 4d. Look-Dev v6 Stainless Hardware, QBH Receptacle, Cooling Fin Rims & Gas Fittings
+    mat_stainless = bpy.data.materials.new("Stainless_Hardware_Fittings")
+    nt_ss = mat_stainless.node_tree
+    bsdf_ss = get_node_by_type(nt_ss, "ShaderNodeBsdfPrincipled")
+    bsdf_ss.inputs["Base Color"].default_value = (0.055, 0.058, 0.065, 1.0)
+    bsdf_ss.inputs["Metallic"].default_value = 0.92
+    bsdf_ss.inputs["Roughness"].default_value = 0.24
+    bevel_ss = nt_ss.nodes.new("ShaderNodeBevel")
+    bevel_ss.inputs["Radius"].default_value = 0.0004
+    bevel_ss.samples = 4
+    nt_ss.links.new(bevel_ss.outputs["Normal"], bsdf_ss.inputs["Normal"])
+    mats["stainless"] = mat_stainless
+
+    # 4e. Look-Dev v6 Runner Wiper Seals (Dark synthetic elastomer end-seals)
+    mat_wiper = bpy.data.materials.new("Runner_Wiper_Seal")
+    bsdf_wp = get_node_by_type(mat_wiper.node_tree, "ShaderNodeBsdfPrincipled")
+    bsdf_wp.inputs["Base Color"].default_value = (0.006, 0.006, 0.008, 1.0)
+    bsdf_wp.inputs["Metallic"].default_value = 0.08
+    bsdf_wp.inputs["Roughness"].default_value = 0.65
+    mats["wiper"] = mat_wiper
+
+    # 4f. Look-Dev v6 Technical Stealth Ceramic Isolator Ring (Capacitive height sensor ring - dark matte)
+    mat_ceramic = bpy.data.materials.new("Sensor_Ceramic_Isolator")
+    bsdf_cer = get_node_by_type(mat_ceramic.node_tree, "ShaderNodeBsdfPrincipled")
+    bsdf_cer.inputs["Base Color"].default_value = (0.015, 0.015, 0.016, 1.0)
+    bsdf_cer.inputs["Metallic"].default_value = 0.05
+    bsdf_cer.inputs["Roughness"].default_value = 0.70
+    mats["ceramic"] = mat_ceramic
+
+    # 4g. Look-Dev v6 Knurled Dark Bronze/Graphite Sensor Retention Collar (stealth low-specular)
+    mat_brass = bpy.data.materials.new("Knurled_Brass_Collar")
+    bsdf_br = get_node_by_type(mat_brass.node_tree, "ShaderNodeBsdfPrincipled")
+    bsdf_br.inputs["Base Color"].default_value = (0.010, 0.010, 0.011, 1.0)
+    bsdf_br.inputs["Metallic"].default_value = 0.40
+    bsdf_br.inputs["Roughness"].default_value = 0.60
+    mats["brass"] = mat_brass
+
+    # 5. Indistinguishable Tiny Laser Emitter Tip (Stealth matte dark carbon cone — zero specular streak)
     mat_nozzle = bpy.data.materials.new("Laser_Stealth_Aperture")
     nt_n = mat_nozzle.node_tree
     bsdf_n = get_node_by_type(nt_n, "ShaderNodeBsdfPrincipled")
-    bsdf_n.inputs["Base Color"].default_value = (0.004, 0.004, 0.005, 1.0)
-    bsdf_n.inputs["Metallic"].default_value = 0.18
-    bsdf_n.inputs["Roughness"].default_value = 0.62
+    bsdf_n.inputs["Base Color"].default_value = (0.003, 0.003, 0.004, 1.0)
+    bsdf_n.inputs["Metallic"].default_value = 0.10
+    bsdf_n.inputs["Roughness"].default_value = 0.72
     bevel_n = nt_n.nodes.new("ShaderNodeBevel")
     bevel_n.inputs["Radius"].default_value = 0.0006
     bevel_n.samples = 4
@@ -382,134 +448,383 @@ def build_pipe_and_red_ends(mats: dict[str, bpy.types.Material]) -> dict[str, bp
     return objs
 
 
+# ------------------------------------------------------------------------------
+# Look-Dev v6 Geometry Construction Helpers
+# ------------------------------------------------------------------------------
+def create_cylinder_bmesh(
+    bm: bmesh.types.BMesh,
+    radius: float,
+    z_min: float,
+    z_max: float,
+    center_xy: tuple[float, float] = (0.0, 0.0),
+    segments: int = 32,
+    mat_idx: int = 0,
+    cap_top: bool = True,
+    cap_bottom: bool = True,
+) -> None:
+    cx, cy = center_xy
+    top_ring = []
+    bot_ring = []
+    for i in range(segments):
+        a = (2.0 * math.pi * i) / segments
+        x = cx + radius * math.cos(a)
+        y = cy + radius * math.sin(a)
+        top_ring.append(bm.verts.new((x, y, z_max)))
+        bot_ring.append(bm.verts.new((x, y, z_min)))
+    for i in range(segments):
+        inext = (i + 1) % segments
+        f = bm.faces.new((bot_ring[i], bot_ring[inext], top_ring[inext], top_ring[i]))
+        f.smooth = True
+        f.material_index = mat_idx
+    if cap_bottom:
+        f = bm.faces.new(bot_ring)
+        f.smooth = False
+        f.material_index = mat_idx
+    if cap_top:
+        f = bm.faces.new(reversed(top_ring))
+        f.smooth = False
+        f.material_index = mat_idx
+
+
+def create_box_bmesh(
+    bm: bmesh.types.BMesh,
+    min_pt: tuple[float, float, float],
+    max_pt: tuple[float, float, float],
+    mat_idx: int = 0,
+) -> None:
+    x0, y0, z0 = min_pt
+    x1, y1, z1 = max_pt
+    verts = [
+        bm.verts.new((x0, y0, z0)),
+        bm.verts.new((x1, y0, z0)),
+        bm.verts.new((x1, y1, z0)),
+        bm.verts.new((x0, y1, z0)),
+        bm.verts.new((x0, y0, z1)),
+        bm.verts.new((x1, y0, z1)),
+        bm.verts.new((x1, y1, z1)),
+        bm.verts.new((x0, y1, z1)),
+    ]
+    faces = [
+        bm.faces.new((verts[0], verts[3], verts[2], verts[1])),  # Bottom (-Z)
+        bm.faces.new((verts[4], verts[5], verts[6], verts[7])),  # Top (+Z)
+        bm.faces.new((verts[0], verts[1], verts[5], verts[4])),  # Front (-Y)
+        bm.faces.new((verts[2], verts[3], verts[7], verts[6])),  # Back (+Y)
+        bm.faces.new((verts[0], verts[4], verts[7], verts[3])),  # Left (-X)
+        bm.faces.new((verts[1], verts[2], verts[6], verts[5])),  # Right (+X)
+    ]
+    for f in faces:
+        f.smooth = False
+        f.material_index = mat_idx
+
+
+def create_shcs_bolt(
+    bm: bmesh.types.BMesh,
+    pos: tuple[float, float, float],
+    dir_axis: str = "Z",
+    head_rad: float = 0.0030,
+    head_len: float = 0.0026,
+    socket_rad: float = 0.0015,
+    socket_depth: float = 0.0016,
+    mat_idx: int = 2,
+) -> None:
+    px, py, pz = pos
+    if dir_axis == "Z":
+        create_cylinder_bmesh(bm, head_rad, pz, pz + head_len, (px, py), segments=16, mat_idx=mat_idx, cap_top=True, cap_bottom=False)
+        hex_ring = []
+        for i in range(6):
+            a = (2.0 * math.pi * i) / 6.0
+            x = px + socket_rad * math.cos(a)
+            y = py + socket_rad * math.sin(a)
+            hex_ring.append(bm.verts.new((x, y, pz + head_len - socket_depth)))
+        f = bm.faces.new(hex_ring)
+        f.smooth = False
+        f.material_index = mat_idx
+    elif dir_axis == "-Y":
+        ring_back = []
+        ring_front = []
+        for i in range(16):
+            a = (2.0 * math.pi * i) / 16.0
+            x = px + head_rad * math.cos(a)
+            z = pz + head_rad * math.sin(a)
+            ring_back.append(bm.verts.new((x, py, z)))
+            ring_front.append(bm.verts.new((x, py - head_len, z)))
+        for i in range(16):
+            inext = (i + 1) % 16
+            f = bm.faces.new((ring_back[i], ring_back[inext], ring_front[inext], ring_front[i]))
+            f.smooth = True
+            f.material_index = mat_idx
+        f = bm.faces.new(ring_front)
+        f.smooth = False
+        f.material_index = mat_idx
+
+
+def create_elbow_fitting(
+    bm: bmesh.types.BMesh,
+    pos: tuple[float, float, float],
+    dir_x: float = 1.0,
+    mat_idx: int = 2,
+) -> None:
+    px, py, pz = pos
+    # Hex collar
+    create_cylinder_bmesh(bm, 0.0055, pz - 0.003, pz + 0.003, (px, py), segments=6, mat_idx=mat_idx)
+    # Vertical fitting stem
+    create_cylinder_bmesh(bm, 0.0040, pz + 0.003, pz + 0.010, (px, py), segments=16, mat_idx=mat_idx)
+    # Corner junction cube
+    create_box_bmesh(bm, (px - 0.004, py - 0.004, pz + 0.008), (px + 0.004, py + 0.004, pz + 0.016), mat_idx=mat_idx)
+    # Horizontal elbow tube running rearward (+Y)
+    y_start = py + 0.004
+    y_end = py + 0.018
+    r_tube = 0.0035
+    ring1 = []
+    ring2 = []
+    for i in range(16):
+        a = (2.0 * math.pi * i) / 16.0
+        x = px + r_tube * math.cos(a)
+        z = (pz + 0.012) + r_tube * math.sin(a)
+        ring1.append(bm.verts.new((x, y_start, z)))
+        ring2.append(bm.verts.new((x, y_end, z)))
+    for i in range(16):
+        inext = (i + 1) % 16
+        f = bm.faces.new((ring1[i], ring1[inext], ring2[inext], ring2[i]))
+        f.smooth = True
+        f.material_index = mat_idx
+    f_end = bm.faces.new(reversed(ring2))
+    f_end.smooth = False
+    f_end.material_index = mat_idx
+
+
 def build_mysterious_laser_head(mats: dict[str, bpy.types.Material]) -> dict[str, bpy.types.Object]:
-    """Build a sleek, honest, ultra-low-profile precision linear stage + tiny stealth laser emitter (v5):
-    - Pipe OD reference = 177.8 mm (0.1778 m).
-    -1. `head_shroud` (Sleek Linear Stage / Optical Track Bar):
-        - Width (X): 520 mm (0.520 m, x = -0.260 m .. +0.260 m)
-        - Height (Z): ONLY 56 mm thick (0.056 m, z = 0.132 m .. 0.188 m) — less than 1/3rd the pipe diameter!
-        - Depth (Y): 96 mm (0.096 m)
-        - Smooth-radiused longitudinal profile so it catches a single razor-thin horizontal specular hairline
-          in low-key silhouette (no chunky polygon facets, no sci-fi wings, no bulky tower).
-    -2. `nozzle` (Tiny Stealth Laser Collar / Moving Shuttle):
-        - Tucked into the shadow underneath the slim rail belly (z = 0.098 m .. 0.135 m).
-        - Only 24 mm diameter at top tapering smoothly to an 11 mm tip (9 mm above pipe top spine).
-        - Dark matte black and excluded from Beat 1 rim lighting so it is completely indistinguishable.
+    """Look-Dev v6: Engineered High-Precision CNC Laser Cutting Head & Linear Stage Assembly:
+    - Maintains the low-profile scale approved in v5 (height = 36 mm, only 20% of 177.8 mm pipe OD!).
+    - Upgrades from a plain extruded rectangular bar into an authentic multi-component industrial laser assembly:
+      1. Stationary Linear Guide Rail (`Linear_Rail_Track`):
+         - 440 mm long precision ground tool steel rail (x = -0.220 m .. +0.220 m) with Gothic-arch ball raceways,
+           7 counterbored SHCS bolts, and machined aluminum end-stop blocks with rubber bumpers.
+      2. Moving Engineered Laser Head & Carriage Assembly (`Laser_Machined_Carriage`):
+         - Dual linear runner blocks (THK/Rexroth recirculating ball carriages) with wiper end-seals, front grease nipples,
+           and mounting bolts.
+         - Aerospace pocketed billet aluminum CNC carriage plate (280 mm wide x 36 mm tall) with chamfered pocket rims,
+           internal stiffening web trusses (ribs), and perimeter SHCS bolt heads.
+         - Central vertical optical collimator barrel (co-axial at x = 0, y = 0) with 4 precision annular cooling fins /
+           heat dissipation flutes that catch crisp, parallel specular highlights under rim lighting.
+         - Upper QBH fiber optic cable receiver with stainless knurled locking collar and flexible armored conduit relief.
+         - Dual assist gas manifold ports (stainless 90-deg elbow compression fittings).
+         - Dynamic Z-axis capacitive sensor ring with knurled brass collar and white technical ceramic isolator ring.
+         - Indistinguishable tiny stealth conical nozzle (9 mm standoff above pipe top spine).
     """
     objs: dict[str, bpy.types.Object] = {}
     r_pipe = PIPE_OD_M / 2.0  # 0.0889 m
-    aperture_tip_z = r_pipe + 0.0090  # 9.0 mm standoff gap above pipe top spine (z = 0.0979 m)
+    aperture_tip_z = r_pipe + 0.0090  # 0.0979 m (9.0 mm standoff gap above pipe top spine)
 
     # --------------------------------------------------------------------------
-    # 1. Tiny, Smooth, Indistinguishable Laser Emitter Collar (`nozzle` = moving shuttle)
-    # Tucked in the 34 mm shadow gap under the sleek linear rail (z = 0.0979 m .. 0.136 m).
-    # Diameter: 11 mm at bottom lip -> 24 mm at rail belly (only 13% of the 177.8 mm pipe OD!).
+    # 1. Stationary Profiled Linear Guide Rail (`Linear_Rail_Track`)
     # --------------------------------------------------------------------------
-    mesh_noz = bpy.data.meshes.new("Laser_Stealth_Shuttle")
-    bm = bmesh.new()
-    shuttle_profile_zr = [
-        (aperture_tip_z, 0.0022),          # 4.4 mm dark exit bore
-        (aperture_tip_z, 0.0055),          # 11 mm tiny bottom lip
-        (aperture_tip_z + 0.004, 0.0068),  # Smooth micro-taper
-        (aperture_tip_z + 0.016, 0.0095),  # 19 mm mid collar
-        (aperture_tip_z + 0.032, 0.0120),  # 24 mm top collar entering the slim rail belly
-        (aperture_tip_z + 0.042, 0.0120),
+    mesh_rail = bpy.data.meshes.new("Linear_Rail_Track")
+    bm_r = bmesh.new()
+
+    # Ground steel rail profile extruded along X (-0.220 m .. +0.220 m = 440 mm)
+    # Y: +0.020 m .. +0.038 m (18 mm wide)
+    # Z: +0.148 m .. +0.168 m (20 mm tall)
+    # With Gothic-arch ball raceway grooves along both Y flanks at z = 0.155 .. 0.161 m
+    rail_yz = [
+        (0.0200, 0.1480),  # Bottom front
+        (0.0380, 0.1480),  # Bottom back
+        (0.0380, 0.1550),  # Back lower
+        (0.0368, 0.1565),  # Back Gothic-arch raceway groove (recessed 1.2 mm)
+        (0.0368, 0.1595),
+        (0.0380, 0.1610),  # Back upper
+        (0.0380, 0.1668),
+        (0.0368, 0.1680),  # Top chamfer back
+        (0.0212, 0.1680),  # Top face
+        (0.0200, 0.1668),  # Top chamfer front
+        (0.0200, 0.1610),  # Front upper
+        (0.0212, 0.1595),  # Front Gothic-arch raceway groove (recessed 1.2 mm)
+        (0.0212, 0.1565),
+        (0.0200, 0.1550),  # Front lower
     ]
-    segs = 48
-    rings = []
-    for z_val, r_val in shuttle_profile_zr:
+
+    x_left = -0.220
+    x_right = +0.220
+    ring_left = [bm_r.verts.new((x_left, y, z)) for y, z in rail_yz]
+    ring_right = [bm_r.verts.new((x_right, y, z)) for y, z in rail_yz]
+
+    n_pts = len(rail_yz)
+    for i in range(n_pts):
+        inext = (i + 1) % n_pts
+        f = bm_r.faces.new((ring_left[i], ring_right[i], ring_right[inext], ring_left[inext]))
+        f.smooth = False
+        f.material_index = 0
+
+    f_l = bm_r.faces.new(ring_left)
+    f_l.smooth = False
+    f_l.material_index = 0
+
+    f_r = bm_r.faces.new(reversed(ring_right))
+    f_r.smooth = False
+    f_r.material_index = 0
+
+    # 7 Counterbored SHCS bolts along top face (z = 0.168 m) at regular 60 mm pitch
+    bolt_x = [-0.180, -0.120, -0.060, 0.0, 0.060, 0.120, 0.180]
+    for bx in bolt_x:
+        create_shcs_bolt(bm_r, (bx, 0.029, 0.168), dir_axis="Z", head_rad=0.0030, head_len=0.0025, socket_rad=0.0015, socket_depth=0.0016, mat_idx=2)
+
+    # Rail end-stop bumpers with cap screws at both ends
+    for ex in [-0.222, +0.220]:
+        create_box_bmesh(bm_r, (ex - 0.002, 0.019, 0.147), (ex + 0.002, 0.039, 0.169), mat_idx=2)
+        create_shcs_bolt(bm_r, (ex, 0.029, 0.169), dir_axis="Z", head_rad=0.0025, head_len=0.0020, mat_idx=2)
+
+    bmesh.ops.recalc_face_normals(bm_r, faces=bm_r.faces)
+    bm_r.to_mesh(mesh_rail)
+    bm_r.free()
+
+    obj_rail = bpy.data.objects.new("Linear_Rail_Track", mesh_rail)
+    bpy.context.scene.collection.objects.link(obj_rail)
+    obj_rail.data.materials.append(mats["rail"])       # Slot 0: ground rail steel
+    obj_rail.data.materials.append(mats["steel"])      # Slot 1: structural steel
+    obj_rail.data.materials.append(mats["stainless"])  # Slot 2: stainless hardware
+    objs["rail"] = obj_rail
+    objs["head_shroud"] = obj_rail  # Stationary reference
+
+    # --------------------------------------------------------------------------
+    # 2. Moving Engineered Laser Head & Carriage Assembly (`Laser_Machined_Carriage`)
+    # --------------------------------------------------------------------------
+    mesh_c = bpy.data.meshes.new("Laser_Machined_Carriage")
+    bm = bmesh.new()
+
+    # Materials mapping in bmesh:
+    # 0 = mat_carriage (billet dark hard-anodized aluminum)
+    # 1 = mat_steel (ground steel runner block)
+    # 2 = mat_stainless (fittings, cooling fins, bolts)
+    # 3 = mat_wiper (black wiper seal)
+    # 4 = mat_ceramic (capacitive isolator ring)
+    # 5 = mat_brass (knurled collar)
+    # 6 = mat_nozzle (stealth carbon nozzle)
+
+    # A. Dual Linear Runner Blocks (recirculating ball carriages)
+    # Left: x = -0.135 .. -0.085 m (50 mm wide)
+    # Right: x = +0.085 .. +0.135 m (50 mm wide)
+    # Wraps rail: y = 0.016 .. 0.042 m, z = 0.145 .. 0.171 m
+    for bx0, bx1 in [(-0.135, -0.085), (+0.085, +0.135)]:
+        # Outer steel body
+        create_box_bmesh(bm, (bx0, 0.016, 0.164), (bx1, 0.042, 0.172), mat_idx=1)  # Top bridge
+        create_box_bmesh(bm, (bx0, 0.016, 0.145), (bx1, 0.020, 0.164), mat_idx=1)  # Front flank
+        create_box_bmesh(bm, (bx0, 0.038, 0.145), (bx1, 0.042, 0.164), mat_idx=1)  # Back flank
+
+        # Wiper seal end-plates (1.5 mm thick at each end)
+        for wx in [bx0 - 0.0015, bx1]:
+            create_box_bmesh(bm, (wx, 0.015, 0.144), (wx + 0.0015, 0.020, 0.172), mat_idx=3)
+            create_box_bmesh(bm, (wx, 0.038, 0.144), (wx + 0.0015, 0.043, 0.172), mat_idx=3)
+            create_box_bmesh(bm, (wx, 0.020, 0.168), (wx + 0.0015, 0.038, 0.172), mat_idx=3)
+
+        # Front grease fitting nipple
+        cx = 0.5 * (bx0 + bx1)
+        create_cylinder_bmesh(bm, 0.0022, 0.157, 0.161, (cx, 0.015), segments=8, mat_idx=5)
+        create_cylinder_bmesh(bm, 0.0012, 0.158, 0.160, (cx, 0.013), segments=8, mat_idx=2)
+
+        # 4 SHCS bolts mounting block to carriage plate
+        for sx in [bx0 + 0.012, bx1 - 0.012]:
+            for sy in [0.022, 0.036]:
+                create_shcs_bolt(bm, (sx, sy, 0.172), dir_axis="Z", head_rad=0.0026, head_len=0.0022, mat_idx=2)
+
+    # B. Main CNC Carriage Plate / Chassis (Aerospace Pocketed Billet)
+    # Spans x = -0.140 .. +0.140 m (280 mm wide), y = -0.024 .. +0.016 m (40 mm deep), z = 0.128 .. 0.164 m (36 mm tall)
+    create_box_bmesh(bm, (-0.140, -0.021, 0.128), (+0.140, 0.016, 0.164), mat_idx=0)
+
+    # Stepped front face with weight-reduction pockets:
+    # Outer pocket rims (raised perimeter flanges of thickness 3 mm, depth 2.5 mm)
+    # Left pocket: x = -0.128 .. -0.032 m, z = 0.134 .. 0.158 m
+    # Right pocket: x = +0.032 .. +0.128 m, z = 0.134 .. 0.158 m
+    for px0, px1 in [(-0.128, -0.032), (+0.032, +0.128)]:
+        # Front pocket border frame
+        create_box_bmesh(bm, (px0 - 0.003, -0.0235, 0.131), (px0, -0.021, 0.161), mat_idx=0)
+        create_box_bmesh(bm, (px1, -0.0235, 0.131), (px1 + 0.003, -0.021, 0.161), mat_idx=0)
+        create_box_bmesh(bm, (px0, -0.0235, 0.158), (px1, -0.021, 0.161), mat_idx=0)
+        create_box_bmesh(bm, (px0, -0.0235, 0.131), (px1, -0.021, 0.134), mat_idx=0)
+        # Structural stiffening diagonal/vertical web rib inside pocket
+        rx_mid = 0.5 * (px0 + px1)
+        create_box_bmesh(bm, (rx_mid - 0.0018, -0.0225, 0.134), (rx_mid + 0.0018, -0.021, 0.158), mat_idx=0)
+
+    # 8 Front face countersunk SHCS bolts along perimeter margins
+    for bx in [-0.132, -0.080, 0.080, 0.132]:
+        for bz in [0.131, 0.161]:
+            create_shcs_bolt(bm, (bx, -0.0235, bz), dir_axis="-Y", head_rad=0.0022, head_len=0.0018, mat_idx=2)
+
+    # C. Central Optical Collimator Column (The Core Laser Barrel)
+    # Co-axial with pipe top spine at x = 0.0, y = 0.0. Height: z = 0.124 .. 0.166 m (flush with rail top)
+    create_cylinder_bmesh(bm, 0.018, 0.124, 0.166, (0.0, 0.0), segments=36, mat_idx=0, cap_top=True, cap_bottom=False)
+
+    # 4 Machined Annular Cooling Fins / Heat Dissipation Flutes
+    # Fin outer radius = 21.0 mm (diameter 42 mm), thickness = 1.5 mm
+    fin_z_list = [0.1460, 0.1505, 0.1550, 0.1595]
+    for fz in fin_z_list:
+        create_cylinder_bmesh(bm, 0.0210, fz, fz + 0.0015, (0.0, 0.0), segments=36, mat_idx=2, cap_top=True, cap_bottom=True)
+
+    # D. Upper QBH Fiber Optic Cable Collimator Receiver (Compact, flush with rail horizon)
+    # Rises only 5 mm above rail top (z = 0.166 .. 0.173 m)
+    create_cylinder_bmesh(bm, 0.012, 0.166, 0.170, (0.0, 0.0), segments=24, mat_idx=2)
+    # Armored conduit strain-relief gland (angled slightly back by 15 deg into darkness)
+    create_cylinder_bmesh(bm, 0.0075, 0.170, 0.174, (0.0, 0.002), segments=16, mat_idx=0)
+
+    # E. Dual Assist Gas Manifold Ports (N2 / O2 90-deg stainless elbow compression fittings)
+    create_elbow_fitting(bm, (-0.036, 0.006, 0.144), dir_x=-1.0, mat_idx=2)
+    create_elbow_fitting(bm, (+0.036, 0.006, 0.144), dir_x=+1.0, mat_idx=2)
+
+    # F. Dynamic Z-Axis Sensor Collar & Technical Ceramic Isolator Ring
+    # 1. Knurled brass/bronze retention ring (z = 0.118 .. 0.124 m, radius 13 mm)
+    create_cylinder_bmesh(bm, 0.013, 0.118, 0.124, (0.0, 0.0), segments=32, mat_idx=5)
+    # 2. High-purity white ceramic electrical isolation ring (z = 0.112 .. 0.118 m, radius 11 mm)
+    create_cylinder_bmesh(bm, 0.011, 0.112, 0.118, (0.0, 0.0), segments=32, mat_idx=4)
+
+    # G. Indistinguishable Tiny Laser Emitter Tip (Conical Stealth Nozzle)
+    # Standoff above pipe top spine (z = 0.0889 m): tip at z = 0.0979 m (9.0 mm clearance)
+    # Tapers smoothly from 9.5 mm radius at ceramic ring to 4.5 mm radius at tip with 2.0 mm exit orifice
+    tip_z = aperture_tip_z
+    top_z = 0.112
+    noz_rings = []
+    noz_profile = [
+        (tip_z, 0.0020),          # Inner exit orifice (4 mm diameter)
+        (tip_z, 0.0045),          # Outer tip lip (9 mm diameter)
+        (tip_z + 0.003, 0.0055),  # Conical taper
+        (tip_z + 0.008, 0.0075),
+        (top_z, 0.0095),          # Collar meeting ceramic ring
+    ]
+    segs = 32
+    for z_v, r_v in noz_profile:
         ring = []
         for i in range(segs):
             a = (2.0 * math.pi * i) / segs
-            ring.append(bm.verts.new((r_val * math.cos(a), r_val * math.sin(a), z_val)))
-        rings.append(ring)
-    for r_i in range(len(rings) - 1):
+            ring.append(bm.verts.new((r_v * math.cos(a), r_v * math.sin(a), z_v)))
+        noz_rings.append(ring)
+    for r_i in range(len(noz_rings) - 1):
         for i in range(segs):
             inext = (i + 1) % segs
-            bm.faces.new((rings[r_i][i], rings[r_i][inext], rings[r_i + 1][inext], rings[r_i + 1][i]))
-    bm.faces.new(reversed(rings[0]))
-    bm.faces.new(rings[-1])
+            f = bm.faces.new((noz_rings[r_i][i], noz_rings[r_i][inext], noz_rings[r_i + 1][inext], noz_rings[r_i + 1][i]))
+            f.smooth = True
+            f.material_index = 6
+    f_top = bm.faces.new(reversed(noz_rings[-1]))
+    f_top.smooth = False
+    f_top.material_index = 6
+    f_bot = bm.faces.new(noz_rings[0])
+    f_bot.smooth = False
+    f_bot.material_index = 6
+
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
-    for f in bm.faces:
-        f.smooth = True
-    bm.to_mesh(mesh_noz)
+    bm.to_mesh(mesh_c)
     bm.free()
 
-    obj_shuttle = bpy.data.objects.new("Laser_Stealth_Shuttle", mesh_noz)
-    bpy.context.scene.collection.objects.link(obj_shuttle)
-    obj_shuttle.data.materials.append(mats["nozzle"])
-    objs["nozzle"] = obj_shuttle
+    obj_carriage = bpy.data.objects.new("Laser_Machined_Carriage", mesh_c)
+    bpy.context.scene.collection.objects.link(obj_carriage)
+    obj_carriage.data.materials.append(mats["carriage"])   # Slot 0: billet anodized aluminum
+    obj_carriage.data.materials.append(mats["steel"])      # Slot 1: ground runner steel
+    obj_carriage.data.materials.append(mats["stainless"])  # Slot 2: stainless hardware & fins
+    obj_carriage.data.materials.append(mats["wiper"])      # Slot 3: dark wiper seal
+    obj_carriage.data.materials.append(mats["ceramic"])    # Slot 4: white ceramic isolator
+    obj_carriage.data.materials.append(mats["brass"])      # Slot 5: knurled brass collar
+    obj_carriage.data.materials.append(mats["nozzle"])     # Slot 6: stealth carbon nozzle
 
-    # --------------------------------------------------------------------------
-    # 2. Sleek, Honest, Swiss-Machined Linear Guide Carriage (`head_shroud`)
-    # Dimensions: 410 mm wide (X) x 72 mm deep (Y) x 34 mm tall (Z: 0.130 m .. 0.164 m).
-    # Features crisp 2.0 mm 45-deg machined chamfers, a recessed horizontal linear rail groove,
-    # and flat anodized end-plates (replaces the generic rounded pill extrusion).
-    # --------------------------------------------------------------------------
-    mesh_head = bpy.data.meshes.new("Sleek_Linear_Stage_Bar")
-    bm_h = bmesh.new()
+    objs["carriage"] = obj_carriage
+    objs["nozzle"] = obj_carriage  # Moving shuttle parented to all laser FX
 
-    # Crisp machined YZ cross-section (z from 0.130 m to 0.164 m, half_y up to 0.036 m):
-    # - 2.0 mm bottom chamfer (0.130..0.132)
-    # - Lower carriage rail face (0.132..0.144)
-    # - 1.5 mm recessed horizontal linear guide groove (0.144..0.149)
-    # - Upper carriage rail face (0.149..0.162)
-    # - 2.0 mm top chamfer (0.162..0.164) catching a razor-thin specular hairline!
-    yz_profile = [
-        (0.1300, 0.0340),
-        (0.1320, 0.0360),
-        (0.1440, 0.0360),
-        (0.1448, 0.0345),
-        (0.1482, 0.0345),
-        (0.1490, 0.0360),
-        (0.1620, 0.0360),
-        (0.1640, 0.0340),
-    ]
-    loop_yz: list[tuple[float, float]] = []
-    for z_v, hy in yz_profile:
-        loop_yz.append((-hy, z_v))
-    for z_v, hy in reversed(yz_profile):
-        loop_yz.append((+hy, z_v))
-
-    # Extrude along X (-0.205 m .. +0.205 m = 410 mm) with crisp 1.8 mm end-plate chamfers
-    x_stations = [
-        (-0.2050, 0.95, 0.90),
-        (-0.2032, 1.00, 1.00),
-        (-0.1850, 1.00, 1.00),
-        (+0.1850, 1.00, 1.00),
-        (+0.2032, 1.00, 1.00),
-        (+0.2050, 0.95, 0.90),
-    ]
-    z_mid = 0.1470
-    x_rings = []
-    n_pts = len(loop_yz)
-    for x_pos, sy, sz in x_stations:
-        ring = []
-        for py, pz in loop_yz:
-            ring.append(bm_h.verts.new((x_pos, py * sy, z_mid + (pz - z_mid) * sz)))
-        x_rings.append(ring)
-
-    for r_i in range(len(x_rings) - 1):
-        for i in range(n_pts):
-            inext = (i + 1) % n_pts
-            f = bm_h.faces.new((x_rings[r_i][i], x_rings[r_i][inext], x_rings[r_i + 1][inext], x_rings[r_i + 1][i]))
-            f.smooth = False
-
-    f_left = bm_h.faces.new(reversed(x_rings[0]))
-    f_left.smooth = False
-    f_right = bm_h.faces.new(x_rings[-1])
-    f_right.smooth = False
-
-    bmesh.ops.recalc_face_normals(bm_h, faces=bm_h.faces)
-    bm_h.to_mesh(mesh_head)
-    bm_h.free()
-
-    obj_head = bpy.data.objects.new("Sleek_Linear_Stage_Bar", mesh_head)
-    bpy.context.scene.collection.objects.link(obj_head)
-    obj_head.data.materials.append(mats["shroud"])
-    objs["head_shroud"] = obj_head
-
-    obj_shuttle.parent = obj_head
     return objs
 
 
@@ -659,7 +974,12 @@ def setup_world_and_lights(
         col_pipe_recv.objects.link(obj)
 
     col_head_recv = bpy.data.collections.new("LL_Head_Receivers")
-    col_head_recv.objects.link(head_objs["head_shroud"])
+    if "rail" in head_objs:
+        col_head_recv.objects.link(head_objs["rail"])
+    if "carriage" in head_objs:
+        col_head_recv.objects.link(head_objs["carriage"])
+    elif "head_shroud" in head_objs:
+        col_head_recv.objects.link(head_objs["head_shroud"])
 
     # 1. World Shader: Ultra-low-strength desaturated studio.exr (0.006) so dark black steel stays
     # deep black outside its studio rim highlights; pure black (0.0004) for camera rays.
@@ -778,40 +1098,40 @@ def setup_world_and_lights(
         receiver_col=col_pipe_recv,
     )
 
-    # 5. Whisper-Soft Specular Hairline Rim on the Sleek Linear Stage Bar (`head_shroud` ONLY):
-    # Gives a single, understated metallic edge hairline along the slim 520 mm x 56 mm horizontal rail
-    # while leaving the tiny 11-24 mm laser collar (`nozzle`) in deep, indistinguishable shadow!
+    # 5. Whisper-Soft Specular Hairline Rim on the Sleek Linear Rail & Cooling Fins (`col_head_recv` ONLY):
+    # Gives understated metallic edge hairlines along the linear rail top and fin contours
+    # while leaving the lower nozzle and carriage front in deep, indistinguishable shadow!
     lights["mystery_head_rim_left"] = add_strip_light(
         name="Mystery_Head_Rim_Left",
-        location=(-0.75, -0.35, 0.28),
-        target=(0.0, 0.0, 0.165),
-        energy=1.6,
-        size_x_long=0.18,
-        size_y_narrow=0.18,
+        location=(-0.60, -0.18, 0.24),
+        target=(-0.10, 0.025, 0.165),
+        energy=0.65,
+        size_x_long=0.12,
+        size_y_narrow=0.12,
         color=(0.72, 0.82, 1.0),
-        spread_deg=38.0,
+        spread_deg=28.0,
         receiver_col=col_head_recv,
     )
     lights["mystery_head_rim_right"] = add_strip_light(
         name="Mystery_Head_Rim_Right",
-        location=(0.75, -0.35, 0.28),
-        target=(0.0, 0.0, 0.165),
-        energy=1.2,
-        size_x_long=0.18,
-        size_y_narrow=0.18,
+        location=(0.60, -0.18, 0.24),
+        target=(0.10, 0.025, 0.165),
+        energy=0.45,
+        size_x_long=0.12,
+        size_y_narrow=0.12,
         color=(0.72, 0.82, 1.0),
-        spread_deg=38.0,
+        spread_deg=28.0,
         receiver_col=col_head_recv,
     )
     lights["mystery_head_top_rim"] = add_strip_light(
         name="Mystery_Head_Top_Rim",
-        location=(0.0, -0.42, 0.52),
-        target=(0.0, 0.0, 0.175),
-        energy=1.8,
-        size_x_long=0.62,
-        size_y_narrow=0.05,
+        location=(0.0, -0.22, 0.46),
+        target=(0.0, 0.025, 0.168),
+        energy=0.85,
+        size_x_long=0.46,
+        size_y_narrow=0.025,
         color=(0.76, 0.86, 1.0),
-        spread_deg=34.0,
+        spread_deg=24.0,
         receiver_col=col_head_recv,
     )
 
@@ -835,7 +1155,7 @@ def setup_world_and_lights(
     p_bounce.shadow_soft_size = 0.025
     obj_bounce = bpy.data.objects.new("Laser_Head_Belly_Bounce", p_bounce)
     scene.collection.objects.link(obj_bounce)
-    obj_bounce.location = Vector((0.0, -0.085, PIPE_OD_M / 2.0 + 0.018))
+    obj_bounce.location = Vector((0.0, -0.045, PIPE_OD_M / 2.0 + 0.022))
     obj_bounce.light_linking.receiver_collection = col_head_recv
     obj_bounce.parent = shuttle_obj
     lights["head_belly_bounce"] = obj_bounce
@@ -945,7 +1265,7 @@ def animate_laser_sequence(
             slot_em = 140.0
             spark_em = 220.0 * pulse
             flash_w = 95.0 * pulse
-            bounce_w = 18.0 * pulse
+            bounce_w = 26.0 * pulse
             ember_w = 24.0
             slot_scale_x = max(0.05, u)
             hide_strike = False
@@ -1092,7 +1412,7 @@ def sha256_file(path: Path) -> str:
 
 
 def main() -> None:
-    out_dir = Path(r"c:\Users\kyle\MPS\slotted-liner\marketing\blender\renders\v5_lookdev")
+    out_dir = Path(r"c:\Users\kyle\MPS\slotted-liner\marketing\blender\renders\v6_lookdev")
     scene_dir = Path(r"c:\Users\kyle\MPS\slotted-liner\marketing\blender\scenes")
     out_dir.mkdir(parents=True, exist_ok=True)
     scene_dir.mkdir(parents=True, exist_ok=True)
@@ -1112,7 +1432,7 @@ def main() -> None:
     scene.frame_set(CHECK_FRAMES["beat1_stillness"])
     audit = audit_scene_geometry(scene, cam, pipe_objs, head_objs)
 
-    blend_path = scene_dir / "laser_slotted_liner_teaser_v5.blend"
+    blend_path = scene_dir / "laser_slotted_liner_teaser_v6.blend"
     bpy.ops.wm.save_as_mainfile(filepath=str(blend_path))
 
     rendered_files: dict[str, dict] = {}
@@ -1146,9 +1466,9 @@ def main() -> None:
         "audit": audit,
         "renders": rendered_files,
     }
-    receipt_path = out_dir / "v5_lookdev_receipt.json"
+    receipt_path = out_dir / "v6_lookdev_receipt.json"
     receipt_path.write_text(json.dumps(receipt, indent=2), encoding="utf-8")
-    print("LOOKDEV_V5_DONE", json.dumps(receipt, indent=2))
+    print("LOOKDEV_V6_DONE", json.dumps(receipt, indent=2))
 
 
 if __name__ == "__main__":

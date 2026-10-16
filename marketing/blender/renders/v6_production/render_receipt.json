@@ -1,0 +1,103 @@
+{
+  "job_dir": "C:\\AI-Station\\jobs\\slotted-liner-teaser-v6",
+  "blender_version": "5.2.2 LTS",
+  "device": "NVIDIA GeForce RTX 3060 Laptop GPU (OPTIX)",
+  "total_render_seconds": 607.63,
+  "frame_count": 160,
+  "pathtraced_frames": 85,
+  "beat_hashes": {
+    "beat1": "a9b53850afe2961feb78867c26a2899b8b57dd0716c6812af64d4c8921f7360c",
+    "beat2": "89147e3b08930ef4f35c9f90c4198a60bf26f1da9449b227af6b66aa6e525206",
+    "beat3": "0e63c8550ff1e4f50bd81db6dfc64a06f753504aea1d1f1bfd4429da3c9f1525"
+  },
+  "mp4_wide": {
+    "file": "laser_slotted_liner_teaser_v6_1080p.mp4",
+    "bytes": 448904,
+    "sha256": "ece3a6686d3b9b81e665f1830f3cfecb91823a11b3cc845d15100c12d5bf817a"
+  },
+  "mp4_center_zoom": {
+    "file": "laser_slotted_liner_center_zoom_v6.mp4",
+    "bytes": 357117,
+    "sha256": "8d4de2e4a05680d7c6a806ec5cfa6930eee8bdb8f8f385e8140aa266a647ad10"
+  },
+  "uhd_4k_renders": {
+    "beat1_stillness": {
+      "frame": 45,
+      "file": "beat1_stillness_4k_f045.png",
+      "bytes": 6377048,
+      "sha256": "53e5e1ad53a6de524d1c3afaceb54bfc8ffe81315259af761b05b68aeaf8f533"
+    },
+    "beat2_laser_strike": {
+      "frame": 76,
+      "file": "beat2_laser_strike_4k_f076.png",
+      "bytes": 6384190,
+      "sha256": "57fb54f2c8c8acec579685a88bd3e88ae17d33f559c5871f69dbd9b0c20c4dba"
+    },
+    "beat3_afterglow": {
+      "frame": 105,
+      "file": "beat3_afterglow_4k_f105.png",
+      "bytes": 6378088,
+      "sha256": "f6b0eccd3f01988715eb1b697a40fabd498f4f1c190c3fce3b31e51c3113c6ec"
+    }
+  },
+  "zoom_still_from_4k": {
+    "file": "beat2_center_scrub_zoom_from_4k_f076.png",
+    "bytes": 750061,
+    "sha256": "5c5f664ff5880d3fd60e435ede2f67316dce2c53a3789fb356999a6228e1abc6"
+  },
+  "audit": {
+    "pipe_dimensions_m": [
+      9.0,
+      0.1778,
+      0.1778
+    ],
+    "coupling_dimensions_m": [
+      0.27,
+      0.1945,
+      0.1945
+    ],
+    "protector_dimensions_m": [
+      0.21,
+      0.1955,
+      0.1955
+    ],
+    "sleek_stage_dimensions_m": [
+      0.447,
+      0.02,
+      0.024
+    ],
+    "stealth_shuttle_dimensions_m": [
+      0.28,
+      0.0683,
+      0.0763
+    ],
+    "horizontal_pipe_span_fraction": 0.9025,
+    "projections": {
+      "left_red_coupling": {
+        "ndc_x": 0.0473,
+        "ndc_y": 0.4752,
+        "depth_m": 23.729
+      },
+      "center_top_spine": {
+        "ndc_x": 0.5,
+        "ndc_y": 0.491,
+        "depth_m": 23.729
+      },
+      "right_red_protector": {
+        "ndc_x": 0.9498,
+        "ndc_y": 0.4752,
+        "depth_m": 23.729
+      },
+      "stealth_laser_shuttle": {
+        "ndc_x": 0.5,
+        "ndc_y": 0.4945,
+        "depth_m": 23.729
+      },
+      "sleek_linear_stage_bar": {
+        "ndc_x": 0.5,
+        "ndc_y": 0.5035,
+        "depth_m": 23.729
+      }
+    }
+  }
+}
