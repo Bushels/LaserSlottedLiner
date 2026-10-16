@@ -1,0 +1,98 @@
+{
+  "job_dir": "C:\\AI-Station\\jobs\\slotted-liner-teaser-v3",
+  "blender_version": "5.2.2 LTS",
+  "device": "NVIDIA GeForce RTX 3060 Laptop GPU (OPTIX)",
+  "total_render_seconds": 722.13,
+  "frame_count": 160,
+  "pathtraced_frames": 85,
+  "beat_hashes": {
+    "beat1": "8d5b6be0bd8b86ac6b9ccfcf72d77da944eabe6beb7fdb109c01cd66a5e7f72f",
+    "beat2": "4806ad5800237aebc60afe36333a7aa56d5d47f222d193b83140cd7d45985f92",
+    "beat3": "26262d53e0d4a50602a89bcb24d5b5f44264cb43e45f355a297a6f7c1caa2e61"
+  },
+  "mp4_wide": {
+    "file": "laser_slotted_liner_teaser_v3_1080p.mp4",
+    "bytes": 474957,
+    "sha256": "283f9b69a1c5509ab18c384b78216221d53defad7cd46d272917255a148ab883"
+  },
+  "mp4_center_zoom": {
+    "file": "laser_slotted_liner_center_zoom_v3.mp4",
+    "bytes": 489710,
+    "sha256": "e203a9ba7cd7e2b52b831bea1bab1769964139f50dc498ed86e1ba78554acf64"
+  },
+  "uhd_4k_renders": {
+    "beat1_stillness": {
+      "frame": 45,
+      "file": "beat1_stillness_4k_f045.png",
+      "bytes": 6430093,
+      "sha256": "8c3e41c37487e230d7c13d27eee5c9cf75a37348f59267958a78581d2924eea5"
+    },
+    "beat2_laser_strike": {
+      "frame": 76,
+      "file": "beat2_laser_strike_4k_f076.png",
+      "bytes": 6439794,
+      "sha256": "9d8f487fe2fc12d4368e5dd1056652e82a25b08678167e0bd67cca555bfa88a3"
+    },
+    "beat3_afterglow": {
+      "frame": 105,
+      "file": "beat3_afterglow_4k_f105.png",
+      "bytes": 6431340,
+      "sha256": "7e63419bfe32ddd59a58d0b9e59f3030eaed2b39f4480fdf4ba71e6d195db881"
+    }
+  },
+  "zoom_still_from_4k": {
+    "file": "beat2_center_scrub_zoom_from_4k_f076.png",
+    "bytes": 803017,
+    "sha256": "9b49fdea3fa03f268bda631d46fdf9fe4453e9adac75a7aec0fe824a6017f207"
+  },
+  "audit": {
+    "pipe_dimensions_m": [
+      9.0,
+      0.1778,
+      0.1778
+    ],
+    "coupling_dimensions_m": [
+      0.27,
+      0.1945,
+      0.1945
+    ],
+    "protector_dimensions_m": [
+      0.21,
+      0.1955,
+      0.1955
+    ],
+    "shroud_dimensions_m": [
+      0.425,
+      0.2956,
+      1.15
+    ],
+    "horizontal_pipe_span_fraction": 0.9025,
+    "projections": {
+      "left_red_coupling": {
+        "ndc_x": 0.0473,
+        "ndc_y": 0.4752,
+        "depth_m": 23.729
+      },
+      "center_top_spine": {
+        "ndc_x": 0.5,
+        "ndc_y": 0.491,
+        "depth_m": 23.729
+      },
+      "right_red_protector": {
+        "ndc_x": 0.9498,
+        "ndc_y": 0.4752,
+        "depth_m": 23.729
+      },
+      "mystery_head_nozzle": {
+        "ndc_x": 0.5,
+        "ndc_y": 0.4945,
+        "depth_m": 23.729
+      },
+      "mystery_head_body": {
+        "ndc_x": 0.5,
+        "ndc_y": 0.5425,
+        "depth_m": 23.729
+      }
+    }
+  }
+}
