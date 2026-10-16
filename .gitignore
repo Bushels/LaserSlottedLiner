@@ -1,0 +1,18 @@
+# Blender binary scenes & backups (deterministically rebuilt from scripts/)
+*.blend
+*.blend1
+*.blend2
+
+# Intermediate look-dev iterations & heavy animation frame sequences
+marketing/blender/renders/v1_lookdev/
+marketing/blender/renders/v2_lookdev/
+marketing/blender/renders/*_seq/
+*.mp4
+*.mov
+*.exr
+
+# Python & temp logs
+__pycache__/
+*.pyc
+.agy-*.jsonl
+.agy-*.err

@@ -1,0 +1,81 @@
+{
+  "blender_version": "5.2.1 LTS",
+  "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU (OPTIX)",
+  "resolution": [
+    1920,
+    1080
+  ],
+  "samples": 96,
+  "blend_file": "c:\\Users\\kyle\\MPS\\slotted-liner\\marketing\\blender\\scenes\\laser_slotted_liner_teaser_v3.blend",
+  "blend_sha256": "3c95f7be837205dbfdfd302489ff88f7177c4c212187e8432da5155a559ee26f",
+  "audit": {
+    "pipe_dimensions_m": [
+      9.0,
+      0.1778,
+      0.1778
+    ],
+    "coupling_dimensions_m": [
+      0.27,
+      0.1945,
+      0.1945
+    ],
+    "protector_dimensions_m": [
+      0.21,
+      0.1955,
+      0.1955
+    ],
+    "shroud_dimensions_m": [
+      0.425,
+      0.2956,
+      1.15
+    ],
+    "horizontal_pipe_span_fraction": 0.9025,
+    "projections": {
+      "left_red_coupling": {
+        "ndc_x": 0.0473,
+        "ndc_y": 0.4752,
+        "depth_m": 23.729
+      },
+      "center_top_spine": {
+        "ndc_x": 0.5,
+        "ndc_y": 0.491,
+        "depth_m": 23.729
+      },
+      "right_red_protector": {
+        "ndc_x": 0.9498,
+        "ndc_y": 0.4752,
+        "depth_m": 23.729
+      },
+      "mystery_head_nozzle": {
+        "ndc_x": 0.5,
+        "ndc_y": 0.4945,
+        "depth_m": 23.729
+      },
+      "mystery_head_body": {
+        "ndc_x": 0.5,
+        "ndc_y": 0.5425,
+        "depth_m": 23.729
+      }
+    }
+  },
+  "renders": {
+    "beat1_stillness": {
+      "frame": 45,
+      "path": "c:\\Users\\kyle\\MPS\\slotted-liner\\marketing\\blender\\renders\\v3_lookdev\\beat1_stillness_f045.png",
+      "bytes": 1632717,
+      "sha256": "ada42f83cc38f397f398826a20929cc5b5d9a9c7aab7268a20353ffad611159d"
+    },
+    "beat2_laser_strike": {
+      "frame": 76,
+      "path": "c:\\Users\\kyle\\MPS\\slotted-liner\\marketing\\blender\\renders\\v3_lookdev\\beat2_laser_strike_f076.png",
+      "bytes": 1631173,
+      "sha256": "20af4d7d5ba28d110017bbc319b5c48c2368c7f2e48784e27db80bd48829808c"
+    },
+    "beat3_afterglow": {
+      "frame": 105,
+      "path": "c:\\Users\\kyle\\MPS\\slotted-liner\\marketing\\blender\\renders\\v3_lookdev\\beat3_afterglow_f105.png",
+      "bytes": 1631258,
+      "sha256": "6329813e536947c3121bad5209731ceb319efc2e55a98e076090ad72ffb553e5"
+    }
+  }
+}
