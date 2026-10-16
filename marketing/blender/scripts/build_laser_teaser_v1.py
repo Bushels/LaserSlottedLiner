@@ -155,25 +155,30 @@ def build_materials() -> dict[str, bpy.types.Material]:
     nt_r.links.new(bevel_r.outputs["Normal"], bsdf_r.inputs["Normal"])
     mats["red"] = mat_red
 
-    # 4. Mysterious Laser Shroud (Stealth Matte Obsidian — stays dark until lit from below by laser!)
+    # 4. Mysterious Overhead Mechanism Shroud (Stealth Matte Obsidian — brooding industrial mass)
     mat_shroud = bpy.data.materials.new("Mystery_Laser_Shroud")
     nt_s = mat_shroud.node_tree
     bsdf_s = get_node_by_type(nt_s, "ShaderNodeBsdfPrincipled")
-    bsdf_s.inputs["Base Color"].default_value = (0.010, 0.011, 0.014, 1.0)
-    bsdf_s.inputs["Metallic"].default_value = 0.78
-    bsdf_s.inputs["Roughness"].default_value = 0.36
+    bsdf_s.inputs["Base Color"].default_value = (0.008, 0.009, 0.012, 1.0)
+    bsdf_s.inputs["Metallic"].default_value = 0.72
+    bsdf_s.inputs["Roughness"].default_value = 0.42
     bevel_s = nt_s.nodes.new("ShaderNodeBevel")
-    bevel_s.inputs["Radius"].default_value = 0.0015
+    bevel_s.inputs["Radius"].default_value = 0.0020
     bevel_s.samples = 4
     nt_s.links.new(bevel_s.outputs["Normal"], bsdf_s.inputs["Normal"])
     mats["shroud"] = mat_shroud
 
-    # 5. Coaxial Copper/Titanium Nozzle Tip (dark bronze/copper that gleams when the laser fires below it)
-    mat_nozzle = bpy.data.materials.new("Laser_Coaxial_Nozzle")
-    bsdf_n = get_node_by_type(mat_nozzle.node_tree, "ShaderNodeBsdfPrincipled")
-    bsdf_n.inputs["Base Color"].default_value = (0.38, 0.18, 0.09, 1.0)
-    bsdf_n.inputs["Metallic"].default_value = 0.94
-    bsdf_n.inputs["Roughness"].default_value = 0.22
+    # 5. Indistinguishable Tiny Laser Emitter Pod (Stealth dark matte carbon/anodized — NO copper/gold!)
+    mat_nozzle = bpy.data.materials.new("Laser_Stealth_Aperture")
+    nt_n = mat_nozzle.node_tree
+    bsdf_n = get_node_by_type(nt_n, "ShaderNodeBsdfPrincipled")
+    bsdf_n.inputs["Base Color"].default_value = (0.006, 0.007, 0.009, 1.0)
+    bsdf_n.inputs["Metallic"].default_value = 0.55
+    bsdf_n.inputs["Roughness"].default_value = 0.48
+    bevel_n = nt_n.nodes.new("ShaderNodeBevel")
+    bevel_n.inputs["Radius"].default_value = 0.0008
+    bevel_n.samples = 4
+    nt_n.links.new(bevel_n.outputs["Normal"], bsdf_n.inputs["Normal"])
     mats["nozzle"] = mat_nozzle
 
     # 6. Laser Beam Core (Brilliant Cyan-White 12 kW Fiber Laser Jet)
@@ -225,8 +230,8 @@ def build_materials() -> dict[str, bpy.types.Material]:
         l_g.new(mix_g.outputs["Shader"], out_g.inputs["Surface"])
         return mat
 
-    mats["plasma_halo"] = make_radial_glow_mat("Laser_Plasma_Halo", (0.48, 0.84, 1.0), exponent=3.8)
-    mats["ember_halo"] = make_radial_glow_mat("Laser_Ember_Halo", (1.0, 0.42, 0.08), exponent=3.2)
+    mats["plasma_halo"] = make_radial_glow_mat("Laser_Plasma_Halo", (0.48, 0.84, 1.0), exponent=4.0)
+    mats["ember_halo"] = make_radial_glow_mat("Laser_Ember_Halo", (1.0, 0.42, 0.08), exponent=3.4)
 
     # 8. Top-Spine Hairline Thermal Horizon Edge (strictly at 12 o'clock top dead center)
     mat_slot = bpy.data.materials.new("Top_Spine_Thermal_Horizon")
@@ -377,122 +382,150 @@ def build_pipe_and_red_ends(mats: dict[str, bpy.types.Material]) -> dict[str, bp
 
 
 def build_mysterious_laser_head(mats: dict[str, bpy.types.Material]) -> dict[str, bpy.types.Object]:
-    """Build a sleek, enigmatic 3-axis CNC optical head & shroud hovering in silhouette above x=0.
-    Uses a tapered octagonal shroud, recessed optical collar, and twin umbilical conduits fading
-    into the upper darkness so it reads as mysterious, next-gen industrial hardware rather than boxes.
+    """Build:
+    1. A large, brooding overhead industrial mechanism / CNC bridge shroud (~1.85 m wide along X)
+       hovering low over the center of the pipe (bottom belly at z = 0.132 m, only 43 mm above pipe top!)
+       with sleek, continuous angled industrial bridge facets that catch a subtle overhead back-rim.
+    2. A tiny, recessed, completely indistinguishable laser aperture pod (only 18 mm wide, protruding just
+       10 mm below the dark recessed belly of the mechanism) that translates 60 mm during the cut—so there
+       is NO protruding nozzle neck or recognizable laser head at all.
     """
     objs: dict[str, bpy.types.Object] = {}
     r_pipe = PIPE_OD_M / 2.0  # 0.0889 m
-    nozzle_tip_z = r_pipe + 0.010  # 10 mm standoff gap above pipe top spine
+    aperture_tip_z = r_pipe + 0.0085  # 8.5 mm standoff gap above pipe top spine (z = 0.0974 m)
 
-    # 1. Coaxial optical nozzle + capacitive sensor cone + collimator barrel (revolved around Z)
-    mesh_noz = bpy.data.meshes.new("Laser_Optical_Nozzle")
+    # --------------------------------------------------------------------------
+    # 1. Tiny, Indistinguishable Recessed Laser Aperture (`nozzle` = moving shuttle)
+    # Tucked inside the dark shadow well under the mechanism belly (z = 0.0974 m .. 0.135 m).
+    # Only 18 mm diameter at the bottom lip — completely indistinguishable even at 400% zoom!
+    # --------------------------------------------------------------------------
+    mesh_noz = bpy.data.meshes.new("Laser_Stealth_Shuttle")
     bm = bmesh.new()
-    noz_profile_zr = [
-        (nozzle_tip_z, 0.0038),          # Precision coaxial beam/gas exit tip
-        (nozzle_tip_z, 0.0085),
-        (nozzle_tip_z + 0.026, 0.0190),  # Tapered copper/titanium nozzle cone
-        (nozzle_tip_z + 0.030, 0.0230),  # Capacitive ceramic insulator ring
-        (nozzle_tip_z + 0.048, 0.0230),
-        (nozzle_tip_z + 0.054, 0.0380),  # Protective quartz-window lock collar
-        (nozzle_tip_z + 0.092, 0.0420),
-        (nozzle_tip_z + 0.100, 0.0620),  # Lower head mount ring
-        (nozzle_tip_z + 0.130, 0.0620),
+    shuttle_profile_zr = [
+        (aperture_tip_z, 0.0025),          # Tiny 5 mm dark exit bore
+        (aperture_tip_z, 0.0075),          # 15 mm flat dark rim
+        (aperture_tip_z + 0.005, 0.0095),  # 19 mm low-profile dark bevel
+        (aperture_tip_z + 0.018, 0.0110),  # Disappears into the recessed belly at z = 0.115 m
+        (aperture_tip_z + 0.045, 0.0110),
     ]
-    segs = 64
+    segs = 36
     rings = []
-    for z_val, r_val in noz_profile_zr:
+    for z_val, r_val in shuttle_profile_zr:
         ring = []
         for i in range(segs):
             a = (2.0 * math.pi * i) / segs
-            ring.append(bm.verts.new((r_val * math.cos(a), r_val * math.sin(a), z_val)))
+            ring.append(bm.verts.new((r_val * 1.2 * math.cos(a), r_val * math.sin(a), z_val)))
         rings.append(ring)
     for r_i in range(len(rings) - 1):
         for i in range(segs):
             inext = (i + 1) % segs
             bm.faces.new((rings[r_i][i], rings[r_i][inext], rings[r_i + 1][inext], rings[r_i + 1][i]))
+    bm.faces.new(reversed(rings[0]))
+    bm.faces.new(rings[-1])
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
     for f in bm.faces:
-        f.smooth = abs(f.normal.z) < 0.7
+        f.smooth = False
     bm.to_mesh(mesh_noz)
     bm.free()
-    obj_noz = bpy.data.objects.new("Laser_Optical_Nozzle", mesh_noz)
-    bpy.context.scene.collection.objects.link(obj_noz)
-    obj_noz.data.materials.append(mats["nozzle"])
-    objs["nozzle"] = obj_noz
 
-    # 2. Tapered Octagonal Stealth Optical Cowling & Gantry Shroud (fading into upper darkness)
-    mesh_head = bpy.data.meshes.new("Laser_Head_Shroud")
+    obj_shuttle = bpy.data.objects.new("Laser_Stealth_Shuttle", mesh_noz)
+    bpy.context.scene.collection.objects.link(obj_shuttle)
+    obj_shuttle.data.materials.append(mats["nozzle"])
+    objs["nozzle"] = obj_shuttle
+
+    # --------------------------------------------------------------------------
+    # 2. Large, Brooding Overhead Industrial Mechanism (`head_shroud`)
+    # Uses a sleek, wide trapezoidal/chamfered industrial bridge profile (~1.88 m wide along X,
+    # descending to z = 0.112 m over the pipe) so its continuous horizontal & angled shoulders
+    # catch a subtle, mysterious silhouette rim light above the center of the pipe.
+    # --------------------------------------------------------------------------
+    mesh_head = bpy.data.meshes.new("Overhead_Mechanism_Carriage")
     bm_h = bmesh.new()
-    z0 = nozzle_tip_z + 0.125
 
-    # Build an octagonal lofted shroud profile so angled side facets catch subtle edge light while front stays dark
-    oct_sections = [
-        # (z_height, rx, ry)
-        (z0 + 0.00, 0.075, 0.075),
-        (z0 + 0.04, 0.110, 0.095),
-        (z0 + 0.16, 0.125, 0.105),
-        (z0 + 0.18, 0.102, 0.090),   # Recessed shadow groove
-        (z0 + 0.21, 0.135, 0.115),
-        (z0 + 0.42, 0.150, 0.120),   # Main optical head body
-        (z0 + 0.46, 0.110, 0.095),   # Neck transition
-        (z0 + 0.68, 0.110, 0.095),   # Z-axis actuator column
-        (z0 + 0.74, 0.195, 0.145),   # Upper gantry carriage shroud fading into top black
-        (z0 + 1.15, 0.230, 0.160),
-    ]
-    oct_rings = []
-    # Rotate octagon by 22.5 deg so flat faces + angled 45-deg chamfers face the camera
-    for z_val, rx, ry in oct_sections:
-        ring = []
-        for i in range(8):
-            a = (2.0 * math.pi * i) / 8.0 + math.radians(22.5)
-            ring.append(bm_h.verts.new((rx * math.cos(a), ry * math.sin(a), z_val)))
-        oct_rings.append(ring)
+    def add_lofted_bridge_tier(sections: list[tuple[float, float, float]]) -> None:
+        """Loft an 8-sided elongated industrial bridge ring stack: (z_val, half_x, half_y)."""
+        t_rings = []
+        for z_val, hx, hy in sections:
+            chamfer_x = min(0.14, hx * 0.22)
+            chamfer_y = min(0.08, hy * 0.30)
+            pts = [
+                (hx, hy - chamfer_y),
+                (hx - chamfer_x, hy),
+                (-hx + chamfer_x, hy),
+                (-hx, hy - chamfer_y),
+                (-hx, -hy + chamfer_y),
+                (-hx + chamfer_x, -hy),
+                (hx - chamfer_x, -hy),
+                (hx, -hy + chamfer_y),
+            ]
+            ring = [bm_h.verts.new((px, py, z_val)) for px, py in pts]
+            t_rings.append(ring)
+        for r_i in range(len(t_rings) - 1):
+            for i in range(8):
+                inext = (i + 1) % 8
+                bm_h.faces.new(
+                    (t_rings[r_i][i], t_rings[r_i][inext], t_rings[r_i + 1][inext], t_rings[r_i + 1][i])
+                )
+        bm_h.faces.new(reversed(t_rings[0]))
+        bm_h.faces.new(t_rings[-1])
 
-    for r_i in range(len(oct_rings) - 1):
-        for i in range(8):
-            inext = (i + 1) % 8
-            bm_h.faces.new((oct_rings[r_i][i], oct_rings[r_i][inext], oct_rings[r_i + 1][inext], oct_rings[r_i + 1][i]))
-    # Cap bottom of shroud so upward laser flash reflects off the bottom bevels!
-    bm_h.faces.new(reversed(oct_rings[0]))
-    bm_h.faces.new(oct_rings[-1])
+    # Main multi-tiered overhead industrial bridge carriage (descends low over the pipe to z = 0.122 m)
+    add_lofted_bridge_tier(
+        [
+            # Lower recessed optical track shroud 33 mm above the pipe top spine
+            (0.122, 0.24, 0.10),
+            (0.152, 0.34, 0.13),
+            # Angled flare out to the broad lower gantry bridge (1.56 m wide)
+            (0.190, 0.78, 0.18),
+            (0.310, 0.84, 0.20),
+            # Recessed horizontal shadow reveal groove across the entire bridge
+            (0.325, 0.72, 0.17),
+            (0.355, 0.72, 0.17),
+            # Upper heavy industrial manifold / carriage body (1.88 m wide!)
+            (0.390, 0.94, 0.22),
+            (0.640, 0.90, 0.22),
+            # Tapered upper shroud fading into the dark overhead gantry
+            (0.720, 0.68, 0.18),
+            (1.150, 0.58, 0.16),
+        ]
+    )
 
-    # Add twin side optical/assist-gas armored conduits flanking the head
+    # Add two wide flanking vertical gantry suspension columns rising into the upper darkness
     for sign_x in (-1.0, 1.0):
-        ret = bmesh.ops.create_cone(
-            bm_h,
-            cap_ends=True,
-            cap_tris=False,
-            segments=24,
-            radius1=0.016,
-            radius2=0.016,
-            depth=0.52,
+        add_lofted_bridge_tier(
+            [
+                (0.280, 0.12, 0.22),
+                (0.680, 0.14, 0.23),
+                (1.350, 0.14, 0.23),
+            ]
         )
-        for v in ret["verts"]:
-            v.co.x += sign_x * 0.138
-            v.co.y -= 0.015
-            v.co.z += z0 + 0.42
+        # Translate the last 24 vertices (3 rings * 8 verts) to sign_x * 0.64 m
+        bm_h.verts.ensure_lookup_table()
+        for v in bm_h.verts[-24:]:
+            v.co.x += sign_x * 0.64
 
     bmesh.ops.recalc_face_normals(bm_h, faces=bm_h.faces)
     for f in bm_h.faces:
         f.smooth = False
     bm_h.to_mesh(mesh_head)
     bm_h.free()
-    obj_head = bpy.data.objects.new("Laser_Head_Shroud", mesh_head)
+
+    obj_head = bpy.data.objects.new("Overhead_Mechanism_Carriage", mesh_head)
     bpy.context.scene.collection.objects.link(obj_head)
     obj_head.data.materials.append(mats["shroud"])
     objs["head_shroud"] = obj_head
 
-    obj_noz.parent = obj_head
+    obj_shuttle.parent = obj_head
     return objs
 
 
 def build_center_slot_and_laser_fx(
     mats: dict[str, bpy.types.Material],
-    head_obj: bpy.types.Object,
+    shuttle_obj: bpy.types.Object,
 ) -> dict[str, bpy.types.Object]:
-    """Build the 12 o'clock top-spine laser strike FX (no visible slot face on the side of the pipe—
-    the viewer must infer what happened from the surgical 60 mm axial laser pass along the top spine).
+    """Build the 12 o'clock top-spine laser strike FX parented to the tiny stealth shuttle (`shuttle_obj`).
+    No visible slot face on the side of the pipe—the viewer must infer what happened from the surgical
+    60 mm axial laser pass along the top spine.
     """
     objs: dict[str, bpy.types.Object] = {}
     r_pipe = PIPE_OD_M / 2.0  # 0.0889 m
@@ -501,7 +534,7 @@ def build_center_slot_and_laser_fx(
     mesh_slot = bpy.data.meshes.new("Top_Spine_Thermal_Edge")
     bm_s = bmesh.new()
     x0, x1 = -SLOT_LEN_M / 2.0, SLOT_LEN_M / 2.0
-    half_w = 0.0006
+    half_w = 0.0005
     z_top = r_pipe + 0.0003
 
     v0 = bm_s.verts.new((x0, -half_w, z_top))
@@ -518,7 +551,7 @@ def build_center_slot_and_laser_fx(
     obj_slot.data.materials.append(mats["slot"])
     objs["slot"] = obj_slot
 
-    # 2. Coaxial Laser Beam Cylinder (bridges the 10 mm standoff gap at 12 o'clock, y = 0)
+    # 2. Razor-Thin Coaxial Laser Beam Cylinder (bridges the 8.5 mm standoff gap at 12 o'clock, y = 0)
     mesh_beam = bpy.data.meshes.new("Laser_Beam_Jet")
     bm_b = bmesh.new()
     bmesh.ops.create_cone(
@@ -526,12 +559,12 @@ def build_center_slot_and_laser_fx(
         cap_ends=True,
         cap_tris=False,
         segments=32,
-        radius1=0.0028,
-        radius2=0.0040,
-        depth=0.015,
+        radius1=0.0009,  # 1.8 mm surgical needle core
+        radius2=0.0013,
+        depth=0.011,
     )
     for v in bm_b.verts:
-        v.co.z += r_pipe + 0.005
+        v.co.z += r_pipe + 0.0042
         v.co.y = 0.0
     bm_b.to_mesh(mesh_beam)
     bm_b.free()
@@ -539,16 +572,16 @@ def build_center_slot_and_laser_fx(
     obj_beam = bpy.data.objects.new("Laser_Beam_Jet", mesh_beam)
     bpy.context.scene.collection.objects.link(obj_beam)
     obj_beam.data.materials.append(mats["beam"])
-    obj_beam.parent = head_obj
+    obj_beam.parent = shuttle_obj
     objs["beam"] = obj_beam
 
-    # 3. Camera-facing Optical Plasma Keyhole Halo + Anamorphic Horizontal Streak (parented to head)
-    # Created as a unit grid (-1..1 in X and Z) so `Object` coordinates have length 0..1 for smooth alpha falloff!
-    def make_glow_quad(name: str, scale_x: float, scale_z: float, z_pos: float, mat: bpy.types.Material, parent: bpy.types.Object | None = None) -> bpy.types.Object:
+    # 3. Camera-facing Optical Plasma Keyhole Halo + Anamorphic Horizontal Streak (parented to tiny shuttle)
+    def make_glow_quad(
+        name: str, scale_x: float, scale_z: float, z_pos: float, mat: bpy.types.Material, parent: bpy.types.Object | None = None
+    ) -> bpy.types.Object:
         m_q = bpy.data.meshes.new(name)
         bm_q = bmesh.new()
         bmesh.ops.create_grid(bm_q, x_segments=16, y_segments=16, size=1.0)
-        # Rotate grid from X-Y plane to X-Z plane (facing -Y camera)
         bmesh.ops.rotate(bm_q, verts=bm_q.verts, cent=(0, 0, 0), matrix=Matrix.Rotation(math.radians(90.0), 3, "X"))
         bm_q.to_mesh(m_q)
         bm_q.free()
@@ -557,34 +590,33 @@ def build_center_slot_and_laser_fx(
         o_q.location = Vector((0.0, -0.005, z_pos))
         o_q.scale = Vector((scale_x, 1.0, scale_z))
         o_q.data.materials.append(mat)
-        # Disable shadow casting on optical glow planes
         o_q.visible_shadow = False
         o_q.visible_diffuse = False
         if parent is not None:
             o_q.parent = parent
         return o_q
 
-    # 3a. Tight spherical plasma bloom right in the nozzle-to-pipe gap
-    objs["plasma_bloom"] = make_glow_quad("Laser_Plasma_Bloom", 0.085, 0.065, r_pipe + 0.006, mats["plasma_halo"], head_obj)
+    # 3a. Tight surgical plasma bloom right in the 8.5 mm gap
+    objs["plasma_bloom"] = make_glow_quad("Laser_Plasma_Bloom", 0.052, 0.036, r_pipe + 0.0040, mats["plasma_halo"], shuttle_obj)
     # 3b. Subtle high-tech horizontal anamorphic optical flare streak during laser ignition
-    objs["anamorphic_streak"] = make_glow_quad("Laser_Anamorphic_Streak", 0.420, 0.014, r_pipe + 0.004, mats["plasma_halo"], head_obj)
+    objs["anamorphic_streak"] = make_glow_quad("Laser_Anamorphic_Streak", 0.340, 0.010, r_pipe + 0.0032, mats["plasma_halo"], shuttle_obj)
     # 3c. Post-cut warm residual horizon shimmer right at 12 o'clock top spine (Beat 3 inference cue!)
-    objs["ember_shimmer"] = make_glow_quad("Top_Spine_Ember_Shimmer", 0.065, 0.016, r_pipe + 0.002, mats["ember_halo"], None)
+    objs["ember_shimmer"] = make_glow_quad("Top_Spine_Ember_Shimmer", 0.055, 0.013, r_pipe + 0.002, mats["ember_halo"], None)
 
     # 4. Tight High-Velocity Micro-Spark / Ionized Vapor Plume skimming along the 12 o'clock top spine
     mesh_sparks = bpy.data.meshes.new("Laser_Micro_Sparks")
     bm_sp = bmesh.new()
     spark_vectors = [
-        (-0.038, -0.008, 0.024, 0.0014),
-        (-0.058, -0.012, 0.014, 0.0011),
-        (0.032, -0.008, 0.022, 0.0013),
-        (0.052, 0.005, 0.012, 0.0010),
-        (-0.018, -0.014, 0.034, 0.0012),
-        (0.016, 0.008, 0.030, 0.0012),
-        (-0.075, -0.005, 0.006, 0.0009),
-        (0.068, -0.005, 0.005, 0.0009),
+        (-0.024, -0.005, 0.012, 0.0008),
+        (-0.038, -0.008, 0.008, 0.0007),
+        (0.020, -0.005, 0.011, 0.0008),
+        (0.035, 0.004, 0.007, 0.0007),
+        (-0.012, -0.008, 0.016, 0.0007),
+        (0.010, 0.005, 0.015, 0.0007),
+        (-0.048, -0.004, 0.004, 0.0006),
+        (0.045, -0.004, 0.004, 0.0006),
     ]
-    origin = Vector((0.0, 0.0, r_pipe + 0.002))
+    origin = Vector((0.0, 0.0, r_pipe + 0.0016))
     for dx, dy, dz, rad in spark_vectors:
         tip = origin + Vector((dx, dy, dz))
         mid = origin.lerp(tip, 0.5)
@@ -607,7 +639,7 @@ def build_center_slot_and_laser_fx(
     obj_sparks = bpy.data.objects.new("Laser_Micro_Sparks", mesh_sparks)
     bpy.context.scene.collection.objects.link(obj_sparks)
     obj_sparks.data.materials.append(mats["spark"])
-    obj_sparks.parent = head_obj
+    obj_sparks.parent = shuttle_obj
     objs["sparks"] = obj_sparks
 
     return objs
@@ -622,21 +654,21 @@ def setup_world_and_lights(
     head_objs: dict[str, bpy.types.Object],
 ) -> dict[str, bpy.types.Object]:
     lights: dict[str, bpy.types.Object] = {}
-    head_obj = head_objs["head_shroud"]
+    shuttle_obj = head_objs["nozzle"]
 
     # Create Blender 5.2 Light-Linking Receiver Collections:
-    # - Pipe lights ONLY illuminate the pipe & red bookends (zero spill on mystery head above!)
-    # - Mystery head rim lights ONLY illuminate the shroud (zero reflection blobs on pipe below!)
+    # - Pipe lights ONLY illuminate the pipe & red bookends (zero spill on mystery mechanism above!)
+    # - Overhead mechanism rim lights ONLY illuminate the large upper carriage (`head_shroud`),
+    #   leaving the tiny lower laser emitter (`nozzle`) completely unlit and indistinguishable!
     col_pipe_recv = bpy.data.collections.new("LL_Pipe_Receivers")
     for obj in pipe_objs.values():
         col_pipe_recv.objects.link(obj)
 
     col_head_recv = bpy.data.collections.new("LL_Head_Receivers")
     col_head_recv.objects.link(head_objs["head_shroud"])
-    col_head_recv.objects.link(head_objs["nozzle"])
 
-    # 1. World Shader: Ultra-low-strength desaturated studio.exr (0.008) so dark black steel stays
-    # deep black outside its studio rim highlights; pure black (0.0005) for camera rays.
+    # 1. World Shader: Ultra-low-strength desaturated studio.exr (0.006) so dark black steel stays
+    # deep black outside its studio rim highlights; pure black (0.0004) for camera rays.
     world = bpy.data.worlds.new("Dark_Studio_World")
     scene.world = world
     nodes, links = world.node_tree.nodes, world.node_tree.links
@@ -651,7 +683,7 @@ def setup_world_and_lights(
     links.new(env.outputs["Color"], hsv.inputs["Color"])
 
     bg_refl = nodes.new("ShaderNodeBackground")
-    bg_refl.inputs["Strength"].default_value = 0.008  # Keep pipe body deep black & shroud mysterious!
+    bg_refl.inputs["Strength"].default_value = 0.006
     links.new(hsv.outputs["Color"], bg_refl.inputs["Color"])
 
     bg_cam = nodes.new("ShaderNodeBackground")
@@ -703,8 +735,6 @@ def setup_world_and_lights(
         return lobj
 
     # 2. Primary Pipe Upper-Shoulder Sheen Strip (Light-linked strictly to Pipe & Red Ends):
-    # Placed at +44 deg elevation (y = -1.60, z = +1.55) so the specular reflection sits along the
-    # UPPER shoulder (+22 deg latitude) of the pipe — leaving the center core of the pipe deep black!
     lights["pipe_key_strip"] = add_strip_light(
         name="Pipe_Sheen_Key_Strip",
         location=(0.0, -1.60, 1.55),
@@ -718,8 +748,6 @@ def setup_world_and_lights(
     )
 
     # 3. Lower Edge Separation Strip (Light-linked strictly to Pipe & Red Ends):
-    # Places a subtle dark-gunmetal sheen along the lower shoulder (-20 deg latitude) so the bottom
-    # contour of the 7" black pipe is cleanly separated from the pure black void.
     lights["pipe_bottom_rim"] = add_strip_light(
         name="Pipe_Bottom_Rim_Strip",
         location=(0.0, -1.60, -1.35),
@@ -756,45 +784,68 @@ def setup_world_and_lights(
         receiver_col=col_pipe_recv,
     )
 
-    # 5. Whisper-Soft 3/4 Back-Rim Kickers on the Mysterious Head Above (Light-linked strictly to Head!):
-    # Placed slightly behind (y = +0.18 m) and to the sides so the front face stays in stealthy shadow
-    # while thin edge highlights trace the octagonal chamfers & conduits — pure intrigue in Beat 1!
+    # 5. Whisper-Soft Silhouette Rim Kickers on the Large Overhead Mechanism (`head_shroud` ONLY):
+    # Traces the brooding 1.88 m wide gantry bridge & vertical columns above the pipe while leaving
+    # the tiny lower laser emitter (`nozzle`) in deep, indistinguishable shadow!
     lights["mystery_head_rim_left"] = add_strip_light(
         name="Mystery_Head_Rim_Left",
-        location=(-0.68, 0.18, 0.42),
-        target=(0.0, 0.0, 0.36),
-        energy=6.5,
-        size_x_long=0.18,
-        size_y_narrow=0.55,
-        color=(0.70, 0.82, 1.0),
-        spread_deg=36.0,
+        location=(-1.60, -0.42, 0.58),
+        target=(0.0, 0.0, 0.42),
+        energy=4.2,
+        size_x_long=0.30,
+        size_y_narrow=0.80,
+        color=(0.68, 0.80, 1.0),
+        spread_deg=44.0,
         receiver_col=col_head_recv,
     )
     lights["mystery_head_rim_right"] = add_strip_light(
         name="Mystery_Head_Rim_Right",
-        location=(0.68, 0.18, 0.42),
-        target=(0.0, 0.0, 0.36),
-        energy=4.5,
-        size_x_long=0.18,
-        size_y_narrow=0.55,
-        color=(0.70, 0.82, 1.0),
-        spread_deg=36.0,
+        location=(1.60, -0.42, 0.58),
+        target=(0.0, 0.0, 0.42),
+        energy=3.2,
+        size_x_long=0.30,
+        size_y_narrow=0.80,
+        color=(0.68, 0.80, 1.0),
+        spread_deg=44.0,
+        receiver_col=col_head_recv,
+    )
+    lights["mystery_head_top_rim"] = add_strip_light(
+        name="Mystery_Head_Top_Rim",
+        location=(0.0, -0.55, 1.35),
+        target=(0.0, 0.0, 0.35),
+        energy=2.8,
+        size_x_long=2.10,
+        size_y_narrow=0.14,
+        color=(0.68, 0.80, 1.0),
+        spread_deg=40.0,
         receiver_col=col_head_recv,
     )
 
-    # 6. Dynamic Laser Strike Point Lights (0 W in Beat 1; ignite in Beat 2 and illuminate ALL objects!)
-    # 6a. High-intensity Cyan-White Optical Ignition Flash lighting the underside of the mystery head & pipe spine
+    # 6. Dynamic Laser Strike Point Lights (0 W in Beat 1; ignite in Beat 2!)
+    # 6a. Tight Pinpoint Flash right at the 12 o'clock top spine gap
     p_flash = bpy.data.lights.new("Laser_Strike_Optical_Flash", "POINT")
     p_flash.energy = 0.0
     p_flash.color = (0.68, 0.88, 1.0)
     p_flash.shadow_soft_size = 0.008
     obj_flash = bpy.data.objects.new("Laser_Strike_Optical_Flash", p_flash)
     scene.collection.objects.link(obj_flash)
-    obj_flash.location = Vector((0.0, -0.025, PIPE_OD_M / 2.0 + 0.012))
-    obj_flash.parent = head_obj
+    obj_flash.location = Vector((0.0, -0.018, PIPE_OD_M / 2.0 + 0.010))
+    obj_flash.parent = shuttle_obj
     lights["laser_flash"] = obj_flash
 
-    # 6b. Warm Molten Kerf Afterglow Point Light right at the 12 o'clock top spine
+    # 6b. Upward Cyan-White Bounce Illumination on the 1.88 m Overhead Mechanism Belly (`col_head_recv` ONLY)
+    p_bounce = bpy.data.lights.new("Laser_Head_Belly_Bounce", "POINT")
+    p_bounce.energy = 0.0
+    p_bounce.color = (0.62, 0.86, 1.0)
+    p_bounce.shadow_soft_size = 0.045
+    obj_bounce = bpy.data.objects.new("Laser_Head_Belly_Bounce", p_bounce)
+    scene.collection.objects.link(obj_bounce)
+    obj_bounce.location = Vector((0.0, -0.26, PIPE_OD_M / 2.0 + 0.025))
+    obj_bounce.light_linking.receiver_collection = col_head_recv
+    obj_bounce.parent = shuttle_obj
+    lights["head_belly_bounce"] = obj_bounce
+
+    # 6c. Warm Molten Kerf Afterglow Point Light right at the 12 o'clock top spine
     p_ember = bpy.data.lights.new("Laser_Kerf_Warm_Glow", "POINT")
     p_ember.energy = 0.0
     p_ember.color = (1.0, 0.42, 0.08)
@@ -809,7 +860,7 @@ def setup_world_and_lights(
 
 def setup_camera(scene: bpy.types.Scene) -> bpy.types.Object:
     """Option A: True Dead-Level Side-Profile Wide 16:9 framing the entire 9.0 m pipe from red coupling
-    to red thread protector, plus the mysterious laser head poised above the center.
+    to red thread protector, plus the mysterious overhead mechanism poised above the center.
     Because the camera is dead-level with the side of the pipe, the 12 o'clock top-spine cut is
     strictly edge-on: the viewer never sees the slot face directly and must infer what is happening.
     """
@@ -839,7 +890,7 @@ def setup_camera(scene: bpy.types.Scene) -> bpy.types.Object:
 # ANIMATION TIMELINE (BEAT 1 STILLNESS -> BEAT 2 SURGICAL STRIKE -> BEAT 3 AFTERGLOW)
 # ==============================================================================
 def animate_laser_sequence(
-    head_obj: bpy.types.Object,
+    shuttle_obj: bpy.types.Object,
     fx_objs: dict[str, bpy.types.Object],
     lights: dict[str, bpy.types.Object],
     mats: dict[str, bpy.types.Material],
@@ -851,6 +902,7 @@ def animate_laser_sequence(
     emit_ember = get_node_by_type(mats["ember_halo"].node_tree, "ShaderNodeEmission")
 
     flash_light = lights["laser_flash"].data
+    bounce_light = lights["head_belly_bounce"].data
     ember_light = lights["kerf_ember"].data
     sparks_obj = fx_objs["sparks"]
     beam_obj = fx_objs["beam"]
@@ -859,18 +911,19 @@ def animate_laser_sequence(
     ember_shimmer = fx_objs["ember_shimmer"]
     slot_obj = fx_objs["slot"]
 
-    # Head subtly settles into start of center pass (-0.030 m) during Beat 1,
-    # then zips across the 60 mm pass (-0.030 -> +0.030 m) during frames 68..84, and stops dead.
-    head_keyframes = [
-        (1, -0.030, 0.015),
-        (38, -0.030, 0.0),
+    # The large overhead mechanism (`head_shroud`) stays poised over x = 0, while the tiny
+    # indistinguishable laser shuttle (`shuttle_obj`) settles into start of center pass (-0.030 m)
+    # during Beat 1, zips across the 60 mm pass (-0.030 -> +0.030 m) during frames 68..84, and stops dead.
+    shuttle_keyframes = [
+        (1, -0.030, 0.008),
+        (12, -0.030, 0.0),
         (FRAME_FIRE_START, -0.030, 0.0),
         (FRAME_FIRE_END, +0.030, 0.0),
         (FRAME_END, +0.030, 0.0),
     ]
-    for frame, x_pos, z_offset in head_keyframes:
-        head_obj.location = Vector((x_pos, 0.0, z_offset))
-        head_obj.keyframe_insert(data_path="location", frame=frame)
+    for frame, x_pos, z_offset in shuttle_keyframes:
+        shuttle_obj.location = Vector((x_pos, 0.0, z_offset))
+        shuttle_obj.keyframe_insert(data_path="location", frame=frame)
 
     for f in range(FRAME_START, FRAME_END + 1):
         if f < FRAME_FIRE_START:
@@ -881,6 +934,7 @@ def animate_laser_sequence(
             slot_em = 0.0
             spark_em = 0.0
             flash_w = 0.0
+            bounce_w = 0.0
             ember_w = 0.0
             slot_scale_x = 0.001
             hide_strike = True
@@ -889,12 +943,13 @@ def animate_laser_sequence(
             # Beat 2: Surgical 12 kW Fiber Laser Strike (frames 68..84)
             u = (f - FRAME_FIRE_START) / float(FRAME_FIRE_END - FRAME_FIRE_START)
             pulse = 1.0 + 0.20 * math.sin(u * math.pi * 6.0)
-            beam_em = 850.0 * pulse
-            plasma_em = 180.0 * pulse
+            beam_em = 950.0 * pulse
+            plasma_em = 195.0 * pulse
             ember_halo_em = 45.0
             slot_em = 140.0
             spark_em = 220.0 * pulse
-            flash_w = 85.0 * pulse
+            flash_w = 95.0 * pulse
+            bounce_w = 18.0 * pulse
             ember_w = 24.0
             slot_scale_x = max(0.05, u)
             hide_strike = False
@@ -902,13 +957,14 @@ def animate_laser_sequence(
         else:
             # Beat 3: Instant laser cutoff, subtle residual thermal horizon shimmer at 12 o'clock
             dt = (f - FRAME_FIRE_END) / float(FRAME_END - FRAME_FIRE_END)
-            decay = math.exp(-2.0 * dt)
+            decay = math.exp(-2.2 * dt)
             beam_em = 0.0
             plasma_em = 0.0
             ember_halo_em = 38.0 * decay
             slot_em = 75.0 * decay
             spark_em = 0.0
             flash_w = 0.0
+            bounce_w = 0.0
             ember_w = 14.0 * decay
             slot_scale_x = 1.0
             hide_strike = True
@@ -931,6 +987,9 @@ def animate_laser_sequence(
 
         flash_light.energy = flash_w
         flash_light.keyframe_insert(data_path="energy", frame=f)
+
+        bounce_light.energy = bounce_w
+        bounce_light.keyframe_insert(data_path="energy", frame=f)
 
         ember_light.energy = ember_w
         ember_light.keyframe_insert(data_path="energy", frame=f)
@@ -993,6 +1052,7 @@ def audit_scene_geometry(
     coup = pipe_objs["coupling"]
     prot = pipe_objs["protector"]
     shroud = head_objs["head_shroud"]
+    shuttle = head_objs["nozzle"]
 
     assert abs(pipe.dimensions.x - PIPE_LEN_M) < 0.005, f"Pipe length mismatch: {pipe.dimensions.x}"
     assert abs(pipe.dimensions.z - PIPE_OD_M) < 0.002, f"Pipe OD mismatch: {pipe.dimensions.z}"
@@ -1003,8 +1063,8 @@ def audit_scene_geometry(
         "left_red_coupling": Vector((-4.55, 0.0, 0.0)),
         "center_top_spine": Vector((0.0, 0.0, PIPE_OD_M / 2.0)),
         "right_red_protector": Vector((4.52, 0.0, 0.0)),
-        "mystery_head_nozzle": Vector((0.0, 0.0, PIPE_OD_M / 2.0 + 0.02)),
-        "mystery_head_body": Vector((0.0, 0.0, 0.38)),
+        "stealth_laser_shuttle": Vector((0.0, 0.0, PIPE_OD_M / 2.0 + 0.02)),
+        "overhead_mechanism_carriage": Vector((0.0, 0.0, 0.42)),
     }
     projections = {}
     for label, pt in key_points.items():
@@ -1020,7 +1080,8 @@ def audit_scene_geometry(
         "pipe_dimensions_m": [round(v, 4) for v in pipe.dimensions],
         "coupling_dimensions_m": [round(v, 4) for v in coup.dimensions],
         "protector_dimensions_m": [round(v, 4) for v in prot.dimensions],
-        "shroud_dimensions_m": [round(v, 4) for v in shroud.dimensions],
+        "overhead_mechanism_dimensions_m": [round(v, 4) for v in shroud.dimensions],
+        "stealth_shuttle_dimensions_m": [round(v, 4) for v in shuttle.dimensions],
         "horizontal_pipe_span_fraction": round(span_ndc_x, 4),
         "projections": projections,
     }
@@ -1035,7 +1096,7 @@ def sha256_file(path: Path) -> str:
 
 
 def main() -> None:
-    out_dir = Path(r"c:\Users\kyle\MPS\slotted-liner\marketing\blender\renders\v3_lookdev")
+    out_dir = Path(r"c:\Users\kyle\MPS\slotted-liner\marketing\blender\renders\v4_lookdev")
     scene_dir = Path(r"c:\Users\kyle\MPS\slotted-liner\marketing\blender\scenes")
     out_dir.mkdir(parents=True, exist_ok=True)
     scene_dir.mkdir(parents=True, exist_ok=True)
@@ -1044,17 +1105,18 @@ def main() -> None:
     mats = build_materials()
     pipe_objs = build_pipe_and_red_ends(mats)
     head_objs = build_mysterious_laser_head(mats)
-    fx_objs = build_center_slot_and_laser_fx(mats, head_objs["head_shroud"])
+    fx_objs = build_center_slot_and_laser_fx(mats, head_objs["nozzle"])
     lights = setup_world_and_lights(scene, pipe_objs, head_objs)
     cam = setup_camera(scene)
 
-    animate_laser_sequence(head_objs["head_shroud"], fx_objs, lights, mats)
+    animate_laser_sequence(head_objs["nozzle"], fx_objs, lights, mats)
     device_str = configure_cycles_optix(scene, width=1920, height=1080, samples=96)
+    scene.render.use_persistent_data = True
 
     scene.frame_set(CHECK_FRAMES["beat1_stillness"])
     audit = audit_scene_geometry(scene, cam, pipe_objs, head_objs)
 
-    blend_path = scene_dir / "laser_slotted_liner_teaser_v3.blend"
+    blend_path = scene_dir / "laser_slotted_liner_teaser_v4.blend"
     bpy.ops.wm.save_as_mainfile(filepath=str(blend_path))
 
     rendered_files: dict[str, dict] = {}
@@ -1088,9 +1150,9 @@ def main() -> None:
         "audit": audit,
         "renders": rendered_files,
     }
-    receipt_path = out_dir / "v3_lookdev_receipt.json"
+    receipt_path = out_dir / "v4_lookdev_receipt.json"
     receipt_path.write_text(json.dumps(receipt, indent=2), encoding="utf-8")
-    print("LOOKDEV_V3_DONE", json.dumps(receipt, indent=2))
+    print("LOOKDEV_V4_DONE", json.dumps(receipt, indent=2))
 
 
 if __name__ == "__main__":

@@ -56,34 +56,21 @@ def find_ffmpeg() -> str:
 
 def main() -> None:
     t0 = time.time()
-    job_dir = Path(os.environ.get("SLOTTED_JOB_DIR", r"C:\AI-Station\jobs\slotted-liner-teaser-v3"))
+    job_dir = Path(os.environ.get("SLOTTED_JOB_DIR", r"C:\AI-Station\jobs\slotted-liner-teaser-v4"))
     frames_dir = job_dir / "frames"
     uhd_dir = job_dir / "uhd_4k"
     frames_dir.mkdir(parents=True, exist_ok=True)
     uhd_dir.mkdir(parents=True, exist_ok=True)
 
-    # 1. Build verified Look-Dev v3 scene
+    # 1. Build verified Look-Dev v4 scene
     scene = teaser.clear_and_init_scene()
     mats = teaser.build_materials()
     pipe_objs = teaser.build_pipe_and_red_ends(mats)
     head_objs = teaser.build_mysterious_laser_head(mats)
-    fx_objs = teaser.build_center_slot_and_laser_fx(mats, head_objs["head_shroud"])
+    fx_objs = teaser.build_center_slot_and_laser_fx(mats, head_objs["nozzle"])
     lights = teaser.setup_world_and_lights(scene, pipe_objs, head_objs)
     cam = teaser.setup_camera(scene)
-    teaser.animate_laser_sequence(head_objs["head_shroud"], fx_objs, lights, mats)
-
-    # Adjust head settle to complete at frame 12 so frames 13..67 are a locked stillness hold
-    head_obj = head_objs["head_shroud"]
-    head_obj.animation_data_clear()
-    for frame, x_pos, z_offset in [
-        (1, -0.030, 0.014),
-        (12, -0.030, 0.0),
-        (teaser.FRAME_FIRE_START, -0.030, 0.0),
-        (teaser.FRAME_FIRE_END, +0.030, 0.0),
-        (teaser.FRAME_END, +0.030, 0.0),
-    ]:
-        head_obj.location = Vector((x_pos, 0.0, z_offset))
-        head_obj.keyframe_insert(data_path="location", frame=frame)
+    teaser.animate_laser_sequence(head_objs["nozzle"], fx_objs, lights, mats)
 
     # 2. Configure Cycles OptiX with fast adaptive sampling & persistent data
     device_str = teaser.configure_cycles_optix(scene, width=1920, height=1080, samples=48)
@@ -96,12 +83,12 @@ def main() -> None:
     scene.frame_set(45)
     audit = teaser.audit_scene_geometry(scene, cam, pipe_objs, head_objs)
 
-    blend_path = job_dir / "laser_slotted_liner_teaser_v3_prod.blend"
+    blend_path = job_dir / "laser_slotted_liner_teaser_v4_prod.blend"
     bpy.ops.wm.save_as_mainfile(filepath=str(blend_path))
 
     # 3. Render 160-frame 1080p sequence:
-    # - Frames 1..12: Head Z-settle (path-traced)
-    # - Frames 13..67: Locked stillness pause (exact hold of Frame 12)
+    # - Frame 1: Stillness reference frame (path-traced)
+    # - Frames 2..67: Locked stillness pause (exact hold of Frame 1)
     # - Frames 68..84: Surgical 12 kW laser strike & 60 mm translation (path-traced)
     # - Frames 85..112: Top-spine thermal afterglow decay (path-traced)
     # - Frames 113..160: Post-cut stillness hold (exact hold of Frame 112)
@@ -109,8 +96,8 @@ def main() -> None:
     for f in range(teaser.FRAME_START, teaser.FRAME_END + 1):
         f_path = frames_dir / f"frame_{f:04d}.png"
         if not (f_path.exists() and f_path.stat().st_size > 10000):
-            if 13 <= f <= 67:
-                src_hold = frames_dir / "frame_0012.png"
+            if 2 <= f <= 67:
+                src_hold = frames_dir / "frame_0001.png"
                 shutil.copy2(src_hold, f_path)
             elif 113 <= f <= 160:
                 src_hold = frames_dir / "frame_0112.png"
@@ -129,7 +116,7 @@ def main() -> None:
                 "sha256": digest,
             }
         )
-        if f in (1, 12, 45, 68, 72, 76, 80, 84, 95, 105, 112, 160):
+        if f in (1, 45, 68, 72, 76, 80, 84, 95, 105, 112, 160):
             elapsed = time.time() - t0
             print(f"[SEQ] Frame {f:03d}/160 done ({elapsed:.1f}s elapsed) -> {digest[:10]}", flush=True)
 
@@ -162,7 +149,7 @@ def main() -> None:
 
     # 5. Encode MP4 videos with FFmpeg
     ffmpeg_bin = find_ffmpeg()
-    mp4_wide = job_dir / "laser_slotted_liner_teaser_v3_1080p.mp4"
+    mp4_wide = job_dir / "laser_slotted_liner_teaser_v4_1080p.mp4"
     cmd_wide = [
         ffmpeg_bin,
         "-y",
@@ -185,7 +172,7 @@ def main() -> None:
     subprocess.run(cmd_wide, check=True)
 
     # Encode a 4x Center Zoom-In ("What the viewer sees when they scrub & zoom in on the center")
-    mp4_zoom = job_dir / "laser_slotted_liner_center_zoom_v3.mp4"
+    mp4_zoom = job_dir / "laser_slotted_liner_center_zoom_v4.mp4"
     cmd_zoom = [
         ffmpeg_bin,
         "-y",
@@ -194,7 +181,7 @@ def main() -> None:
         "-i",
         str(frames_dir / "frame_%04d.png"),
         "-vf",
-        "crop=480:270:720:360,scale=1920:1080:flags=lanczos",
+        "crop=480:270:720:390,scale=1920:1080:flags=lanczos",
         "-c:v",
         "libx264",
         "-preset",
@@ -218,7 +205,11 @@ def main() -> None:
         "-i",
         str(uhd_beat2),
         "-vf",
-        "crop=960:540:1440:720,scale=1920:1080:flags=lanczos",
+        "crop=960:540:1440:780,scale=1920:1080:flags=lanczos",
+        "-frames:v",
+        "1",
+        "-update",
+        "1",
         str(zoom_still_4k),
     ]
     subprocess.run(cmd_crop_4k, check=True)
