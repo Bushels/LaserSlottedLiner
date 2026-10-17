@@ -56,13 +56,13 @@ def find_ffmpeg() -> str:
 
 def main() -> None:
     t0 = time.time()
-    job_dir = Path(os.environ.get("SLOTTED_JOB_DIR", r"C:\AI-Station\jobs\slotted-liner-teaser-v6"))
+    job_dir = Path(os.environ.get("SLOTTED_JOB_DIR", r"C:\AI-Station\jobs\slotted-liner-teaser-v7"))
     frames_dir = job_dir / "frames"
     uhd_dir = job_dir / "uhd_4k"
     frames_dir.mkdir(parents=True, exist_ok=True)
     uhd_dir.mkdir(parents=True, exist_ok=True)
 
-    # 1. Build verified Look-Dev v6 scene
+    # 1. Build verified Look-Dev v7 scene
     scene = teaser.clear_and_init_scene()
     mats = teaser.build_materials()
     pipe_objs = teaser.build_pipe_and_red_ends(mats)
@@ -83,7 +83,7 @@ def main() -> None:
     scene.frame_set(45)
     audit = teaser.audit_scene_geometry(scene, cam, pipe_objs, head_objs)
 
-    blend_path = job_dir / "laser_slotted_liner_teaser_v6_prod.blend"
+    blend_path = job_dir / "laser_slotted_liner_teaser_v7_prod.blend"
     bpy.ops.wm.save_as_mainfile(filepath=str(blend_path))
 
     # 3. Render 160-frame 1080p sequence:
@@ -149,7 +149,7 @@ def main() -> None:
 
     # 5. Encode MP4 videos with FFmpeg
     ffmpeg_bin = find_ffmpeg()
-    mp4_wide = job_dir / "laser_slotted_liner_teaser_v6_1080p.mp4"
+    mp4_wide = job_dir / "laser_slotted_liner_teaser_v7_1080p.mp4"
     cmd_wide = [
         ffmpeg_bin,
         "-y",
@@ -172,7 +172,7 @@ def main() -> None:
     subprocess.run(cmd_wide, check=True)
 
     # Encode a 4x Center Zoom-In ("What the viewer sees when they scrub & zoom in on the center")
-    mp4_zoom = job_dir / "laser_slotted_liner_center_zoom_v6.mp4"
+    mp4_zoom = job_dir / "laser_slotted_liner_center_zoom_v7.mp4"
     cmd_zoom = [
         ffmpeg_bin,
         "-y",
@@ -181,7 +181,7 @@ def main() -> None:
         "-i",
         str(frames_dir / "frame_%04d.png"),
         "-vf",
-        "crop=480:270:720:415,scale=1920:1080:flags=lanczos",
+        "crop=480:270:720:405,scale=1920:1080:flags=lanczos",
         "-c:v",
         "libx264",
         "-preset",
@@ -205,7 +205,7 @@ def main() -> None:
         "-i",
         str(uhd_beat2),
         "-vf",
-        "crop=960:540:1440:830,scale=1920:1080:flags=lanczos",
+        "crop=960:540:1440:810,scale=1920:1080:flags=lanczos",
         "-frames:v",
         "1",
         "-update",
