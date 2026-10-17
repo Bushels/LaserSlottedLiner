@@ -1,0 +1,113 @@
+{
+  "job_dir": "C:\\AI-Station\\jobs\\slotted-liner-teaser-v8",
+  "blender_version": "5.2.2 LTS",
+  "device": "NVIDIA GeForce RTX 3060 Laptop GPU (OPTIX)",
+  "total_render_seconds": 883.42,
+  "frame_count": 160,
+  "pathtraced_frames": 50,
+  "beat_hashes": {
+    "beat1": "07da698f4c0388e176583507ed92840cd13124be2ec1c180311ce44523a0ddee",
+    "beat2": "3ac9232896955b189972955f7ecd23cb64f2706e7426f064798680f680afde4c",
+    "beat3": "f5a5654376861267dad52346823fbf26cff408a0349ad2b127c371a1fe2707da"
+  },
+  "mp4_clean": {
+    "file": "laser_slotted_liner_teaser_v8_clean_1080p.mp4",
+    "bytes": 521488,
+    "sha256": "1756afcad540f953be947b451f0961824d8511a27fadbe17193ee732bc18a6cf"
+  },
+  "mp4_hook": {
+    "file": "laser_slotted_liner_teaser_v8_hook_1080p.mp4",
+    "bytes": 560827,
+    "sha256": "318ca94d726a7c3d04e19e353e0f128316e024453c2ea737869336137fe84ca7"
+  },
+  "mp4_center_zoom": {
+    "file": "laser_slotted_liner_center_zoom_v8.mp4",
+    "bytes": 630017,
+    "sha256": "b1827ba5dbcf65d5bdfd1a0e2edb437ed28a8f229ec3da1597c41ba3017be087"
+  },
+  "uhd_4k_renders": {
+    "beat1_stillness": {
+      "frame": 45,
+      "file": "beat1_stillness_4k_f045.png",
+      "bytes": 6264233,
+      "sha256": "fa3ba92386ef989f93e2df726a1b18d1adeb62ad14cd51ed8f21b0ff1fceddd7"
+    },
+    "beat2_laser_strike": {
+      "frame": 72,
+      "file": "beat2_laser_strike_4k_f072.png",
+      "bytes": 6339564,
+      "sha256": "3fc562f4f7aa3b2669dc9b568050264e31aae0ae9542b384b9c022998c2194ae"
+    },
+    "beat3_afterglow": {
+      "frame": 92,
+      "file": "beat3_afterglow_4k_f092.png",
+      "bytes": 6282180,
+      "sha256": "588c5db3204a062d7d1570c3a6ed582b9db95ba9d0c07178995dd8cad4999156"
+    }
+  },
+  "zoom_still_from_4k": {
+    "file": "beat2_center_scrub_zoom_from_4k_f072.png",
+    "bytes": 1311818,
+    "sha256": "a0cd86277f1615e978021e8b9acd7e3e2cf532b02f681f851fccbed10edf84ac"
+  },
+  "hook_still_f150": {
+    "file": "beat3_endcard_hook_f150.png",
+    "bytes": 742301,
+    "sha256": "5713a3916ee0a91b1ee9f45f8dc2c749a95f25e88150e359f340b73e46ca4abb"
+  },
+  "audit": {
+    "pipe_dimensions_m": [
+      9.0,
+      0.1778,
+      0.1778
+    ],
+    "coupling_dimensions_m": [
+      0.27,
+      0.1945,
+      0.1945
+    ],
+    "protector_dimensions_m": [
+      0.21,
+      0.1955,
+      0.1955
+    ],
+    "sleek_stage_dimensions_m": [
+      3.8,
+      0.048,
+      0.032
+    ],
+    "stealth_shuttle_dimensions_m": [
+      0.0644,
+      0.0644,
+      0.2026
+    ],
+    "horizontal_pipe_span_fraction": 0.7816,
+    "projections": {
+      "left_red_coupling": {
+        "ndc_x": 0.1324,
+        "ndc_y": 0.4228,
+        "depth_m": 2.712
+      },
+      "center_top_spine": {
+        "ndc_x": 0.5087,
+        "ndc_y": 0.5023,
+        "depth_m": 4.249
+      },
+      "right_red_protector": {
+        "ndc_x": 0.914,
+        "ndc_y": 0.4657,
+        "depth_m": 10.903
+      },
+      "stealth_laser_shuttle": {
+        "ndc_x": 0.5087,
+        "ndc_y": 0.609,
+        "depth_m": 4.25
+      },
+      "sleek_linear_stage_bar": {
+        "ndc_x": 0.5087,
+        "ndc_y": 0.6818,
+        "depth_m": 4.251
+      }
+    }
+  }
+}

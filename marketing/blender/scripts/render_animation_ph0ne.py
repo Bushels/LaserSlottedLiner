@@ -2,14 +2,15 @@
 """Remote Production Animation & 4K Scrub-Detail Render Script for PH0NE (ai-worker).
 
 Executes on PH0NE (RTX 3060 Laptop GPU, OptiX, Blender 5.2.2 LTS) inside isolated staging:
-  C:\\AI-Station\\jobs\\slotted-liner-teaser-v3
+  C:\\AI-Station\\jobs\\slotted-liner-teaser-v8
 
 Outputs:
 1. 160-frame 1080p PNG sequence (frames/frame_0001.png .. frame_0160.png)
-2. 4K UHD (3840x2160) Hero Stills for Beat 1 (f045), Beat 2 (f076), Beat 3 (f105)
-3. Master 16:9 Teaser MP4: laser_slotted_liner_teaser_v3_1080p.mp4 (24 fps, 6.67 s)
-4. "Viewer Scrub Zoom-In" Center Detail MP4: laser_slotted_liner_center_zoom_v3.mp4
-5. Deterministic Receipt JSON: render_receipt.json (SHA256 verified)
+2. 4K UHD (3840x2160) Hero Stills for Beat 1 (f045), Beat 2 (f072), Beat 3 (f092)
+3. Clean Master 16:9 Teaser MP4: laser_slotted_liner_teaser_v8_clean_1080p.mp4 (24 fps, 6.67 s)
+4. Hook Master 16:9 Teaser MP4: laser_slotted_liner_teaser_v8_hook_1080p.mp4 (with minimalist end-card hook)
+5. "Viewer Scrub Zoom-In" Center Detail MP4: laser_slotted_liner_center_zoom_v8.mp4
+6. Deterministic Receipt JSON: render_receipt.json (SHA256 verified)
 """
 
 from __future__ import annotations
@@ -24,9 +25,8 @@ import time
 from pathlib import Path
 
 import bpy
-from mathutils import Vector
 
-# Import the verified Look-Dev v3 scene builder from the same directory
+# Import the verified Look-Dev v8 scene builder from the same directory
 SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
@@ -54,15 +54,47 @@ def find_ffmpeg() -> str:
     return "ffmpeg"
 
 
+def build_hook_vf_filter() -> str:
+    """Build an FFmpeg filtergraph that fades in the minimalist end-card hook after the 0.29s strike:
+    - Line 1 (t = 3.85s .. 4.55s fade-in): '20 YEARS OF SAW DISCS.'
+    - Line 2 (t = 4.55s .. 5.25s fade-in): 'OVER IN 0.3 SECONDS.' + thin cyan accent bar
+    """
+    font_reg = "C\\:/Windows/Fonts/bahnschrift.ttf"
+    font_bold = "C\\:/Windows/Fonts/segoeuib.ttf"
+    if not os.path.exists(r"C:\Windows\Fonts\segoeuib.ttf"):
+        font_bold = "C\\:/Windows/Fonts/arialbd.ttf"
+    if not os.path.exists(r"C:\Windows\Fonts\bahnschrift.ttf"):
+        font_reg = "C\\:/Windows/Fonts/segoeui.ttf"
+
+    alpha1 = "if(lt(t,3.85),0,if(lt(t,4.55),(t-3.85)/0.70,1))"
+    alpha2 = "if(lt(t,4.55),0,if(lt(t,5.25),(t-4.55)/0.70,1))"
+
+    dt1 = (
+        f"drawtext=fontfile='{font_reg}':text='20 YEARS OF SAW DISCS.':fontsize=30:"
+        f"fontcolor=0xB8C8D8:alpha='{alpha1}':shadowcolor=0x000000@0.75:shadowx=2:shadowy=2:"
+        f"x=(w-text_w)/2:y=h*0.775"
+    )
+    dt2 = (
+        f"drawtext=fontfile='{font_bold}':text='OVER IN 0.3 SECONDS.':fontsize=48:"
+        f"fontcolor=0xF0FAFF:alpha='{alpha2}':shadowcolor=0x000000@0.85:shadowx=2:shadowy=2:"
+        f"x=(w-text_w)/2:y=h*0.832"
+    )
+    dt3 = (
+        "drawbox=x=(iw-160)/2:y=ih*0.902:w=160:h=3:"
+        "color=0x38D6FF@0.90:t=fill:enable='gte(t,4.85)'"
+    )
+    return f"{dt1},{dt2},{dt3}"
+
+
 def main() -> None:
     t0 = time.time()
-    job_dir = Path(os.environ.get("SLOTTED_JOB_DIR", r"C:\AI-Station\jobs\slotted-liner-teaser-v7"))
+    job_dir = Path(os.environ.get("SLOTTED_JOB_DIR", r"C:\AI-Station\jobs\slotted-liner-teaser-v8"))
     frames_dir = job_dir / "frames"
     uhd_dir = job_dir / "uhd_4k"
     frames_dir.mkdir(parents=True, exist_ok=True)
     uhd_dir.mkdir(parents=True, exist_ok=True)
 
-    # 1. Build verified Look-Dev v7 scene
+    # 1. Build verified Look-Dev v8 ("Director's Cut") scene
     scene = teaser.clear_and_init_scene()
     mats = teaser.build_materials()
     pipe_objs = teaser.build_pipe_and_red_ends(mats)
@@ -83,23 +115,30 @@ def main() -> None:
     scene.frame_set(45)
     audit = teaser.audit_scene_geometry(scene, cam, pipe_objs, head_objs)
 
-    blend_path = job_dir / "laser_slotted_liner_teaser_v7_prod.blend"
+    blend_path = job_dir / "laser_slotted_liner_teaser_v8_prod.blend"
     bpy.ops.wm.save_as_mainfile(filepath=str(blend_path))
 
     # 3. Render 160-frame 1080p sequence:
     # - Frame 1: Stillness reference frame (path-traced)
-    # - Frames 2..67: Locked stillness pause (exact hold of Frame 1)
-    # - Frames 68..84: Surgical 12 kW laser strike & 60 mm translation (path-traced)
-    # - Frames 85..112: Top-spine thermal afterglow decay (path-traced)
+    # - Frames 2..63: Locked stillness pause (exact hold of Frame 1)
+    # - Frames 64..67: 0.17s pre-strike optical lock-on micro-cue (path-traced)
+    # - Frames 68..75: 0.29s surgical 12 kW laser flash + downward spark jet (path-traced)
+    # - Frames 76..112: Top-spine thermal kerf scar decay (path-traced)
     # - Frames 113..160: Post-cut stillness hold (exact hold of Frame 112)
     frame_records = []
+    pathtraced_count = 0
     for f in range(teaser.FRAME_START, teaser.FRAME_END + 1):
         f_path = frames_dir / f"frame_{f:04d}.png"
+        is_hold_early = 2 <= f <= 63
+        is_hold_late = 113 <= f <= 160
+        if not (is_hold_early or is_hold_late):
+            pathtraced_count += 1
+
         if not (f_path.exists() and f_path.stat().st_size > 10000):
-            if 2 <= f <= 67:
+            if is_hold_early:
                 src_hold = frames_dir / "frame_0001.png"
                 shutil.copy2(src_hold, f_path)
-            elif 113 <= f <= 160:
+            elif is_hold_late:
                 src_hold = frames_dir / "frame_0112.png"
                 shutil.copy2(src_hold, f_path)
             else:
@@ -116,19 +155,19 @@ def main() -> None:
                 "sha256": digest,
             }
         )
-        if f in (1, 45, 68, 72, 76, 80, 84, 95, 105, 112, 160):
+        if f in (1, 45, 64, 66, 68, 70, 72, 75, 76, 84, 92, 105, 112, 160):
             elapsed = time.time() - t0
             print(f"[SEQ] Frame {f:03d}/160 done ({elapsed:.1f}s elapsed) -> {digest[:10]}", flush=True)
 
-    # Verify Gate 1b across the three story beats (f045, f076, f105)
+    # Verify Gate 1b across the three story beats (f045, f072, f092)
     beat_hashes = {
         "beat1": frame_records[44]["sha256"],
-        "beat2": frame_records[75]["sha256"],
-        "beat3": frame_records[104]["sha256"],
+        "beat2": frame_records[71]["sha256"],
+        "beat3": frame_records[91]["sha256"],
     }
     assert len(set(beat_hashes.values())) == 3, f"Gate 1b FAILED on beat hashes: {beat_hashes}"
 
-    # 4. Render 4K UHD (3840x2160) Hero Stills for Beat 1, Beat 2 (Viewer Scrub Frame), Beat 3
+    # 4. Render 4K UHD (3840x2160) Hero Stills for Beat 1 (f045), Beat 2 (f072), Beat 3 (f092)
     scene.render.resolution_x = 3840
     scene.render.resolution_y = 2160
     scene.cycles.samples = 96
@@ -147,10 +186,12 @@ def main() -> None:
         }
         print(f"[4K UHD] {beat_name} (frame {frame_num}) -> {u_path.name}", flush=True)
 
-    # 5. Encode MP4 videos with FFmpeg
+    # 5. Encode all 3 MP4 deliverables with FFmpeg
     ffmpeg_bin = find_ffmpeg()
-    mp4_wide = job_dir / "laser_slotted_liner_teaser_v7_1080p.mp4"
-    cmd_wide = [
+
+    # 5a. Clean Master 16:9 Teaser MP4 (no text)
+    mp4_clean = job_dir / "laser_slotted_liner_teaser_v8_clean_1080p.mp4"
+    cmd_clean = [
         ffmpeg_bin,
         "-y",
         "-framerate",
@@ -167,12 +208,38 @@ def main() -> None:
         "yuv420p",
         "-movflags",
         "+faststart",
-        str(mp4_wide),
+        str(mp4_clean),
     ]
-    subprocess.run(cmd_wide, check=True)
+    subprocess.run(cmd_clean, check=True)
 
-    # Encode a 4x Center Zoom-In ("What the viewer sees when they scrub & zoom in on the center")
-    mp4_zoom = job_dir / "laser_slotted_liner_center_zoom_v7.mp4"
+    # 5b. Hook Master 16:9 Teaser MP4 (with minimalist end-card hook via FFmpeg drawtext)
+    mp4_hook = job_dir / "laser_slotted_liner_teaser_v8_hook_1080p.mp4"
+    hook_vf = build_hook_vf_filter()
+    cmd_hook = [
+        ffmpeg_bin,
+        "-y",
+        "-framerate",
+        "24",
+        "-i",
+        str(frames_dir / "frame_%04d.png"),
+        "-vf",
+        hook_vf,
+        "-c:v",
+        "libx264",
+        "-preset",
+        "slow",
+        "-crf",
+        "14",
+        "-pix_fmt",
+        "yuv420p",
+        "-movflags",
+        "+faststart",
+        str(mp4_hook),
+    ]
+    subprocess.run(cmd_hook, check=True)
+
+    # 5c. 2.5x Center Scrub Zoom-In MP4 ("What the viewer sees when they scrub & zoom in on the strike")
+    mp4_zoom = job_dir / "laser_slotted_liner_center_zoom_v8.mp4"
     cmd_zoom = [
         ffmpeg_bin,
         "-y",
@@ -181,7 +248,7 @@ def main() -> None:
         "-i",
         str(frames_dir / "frame_%04d.png"),
         "-vf",
-        "crop=480:270:720:405,scale=1920:1080:flags=lanczos",
+        "crop=768:432:576:310,scale=1920:1080:flags=lanczos",
         "-c:v",
         "libx264",
         "-preset",
@@ -196,16 +263,16 @@ def main() -> None:
     ]
     subprocess.run(cmd_zoom, check=True)
 
-    # Also crop a 16:9 1920x1080 center inspection still from the 4K Beat 2 render using FFmpeg
-    uhd_beat2 = uhd_dir / "beat2_laser_strike_4k_f076.png"
-    zoom_still_4k = uhd_dir / "beat2_center_scrub_zoom_from_4k_f076.png"
+    # 5d. Also crop a 16:9 1920x1080 center inspection still from the 4K Beat 2 render using FFmpeg
+    uhd_beat2 = uhd_dir / "beat2_laser_strike_4k_f072.png"
+    zoom_still_4k = uhd_dir / "beat2_center_scrub_zoom_from_4k_f072.png"
     cmd_crop_4k = [
         ffmpeg_bin,
         "-y",
         "-i",
         str(uhd_beat2),
         "-vf",
-        "crop=960:540:1440:810,scale=1920:1080:flags=lanczos",
+        "crop=1536:864:1152:620,scale=1920:1080:flags=lanczos",
         "-frames:v",
         "1",
         "-update",
@@ -214,6 +281,23 @@ def main() -> None:
     ]
     subprocess.run(cmd_crop_4k, check=True)
 
+    # Extract Frame 150 (t=6.20s) from mp4_hook for quick visual inspection of the end-card hook
+    hook_still_path = job_dir / "beat3_endcard_hook_f150.png"
+    cmd_hook_still = [
+        ffmpeg_bin,
+        "-y",
+        "-ss",
+        "6.20",
+        "-i",
+        str(mp4_hook),
+        "-frames:v",
+        "1",
+        "-update",
+        "1",
+        str(hook_still_path),
+    ]
+    subprocess.run(cmd_hook_still, check=True)
+
     total_sec = round(time.time() - t0, 2)
     receipt = {
         "job_dir": str(job_dir),
@@ -221,12 +305,17 @@ def main() -> None:
         "device": device_str,
         "total_render_seconds": total_sec,
         "frame_count": len(frame_records),
-        "pathtraced_frames": 24 + 17 + 44,
+        "pathtraced_frames": pathtraced_count,
         "beat_hashes": beat_hashes,
-        "mp4_wide": {
-            "file": mp4_wide.name,
-            "bytes": mp4_wide.stat().st_size,
-            "sha256": sha256_file(mp4_wide),
+        "mp4_clean": {
+            "file": mp4_clean.name,
+            "bytes": mp4_clean.stat().st_size,
+            "sha256": sha256_file(mp4_clean),
+        },
+        "mp4_hook": {
+            "file": mp4_hook.name,
+            "bytes": mp4_hook.stat().st_size,
+            "sha256": sha256_file(mp4_hook),
         },
         "mp4_center_zoom": {
             "file": mp4_zoom.name,
@@ -239,6 +328,11 @@ def main() -> None:
             "bytes": zoom_still_4k.stat().st_size,
             "sha256": sha256_file(zoom_still_4k),
         },
+        "hook_still_f150": {
+            "file": hook_still_path.name,
+            "bytes": hook_still_path.stat().st_size,
+            "sha256": sha256_file(hook_still_path),
+        },
         "audit": audit,
     }
     receipt_path = job_dir / "render_receipt.json"
@@ -248,3 +342,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
