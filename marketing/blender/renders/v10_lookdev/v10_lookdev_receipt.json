@@ -1,0 +1,92 @@
+{
+  "blender_version": "5.2.1 LTS",
+  "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU (OPTIX)",
+  "resolution": [
+    1920,
+    1080
+  ],
+  "samples": 96,
+  "blend_file": "c:\\Users\\kyle\\MPS\\slotted-liner\\marketing\\blender\\scenes\\laser_slotted_liner_teaser_v10.blend",
+  "blend_sha256": "df416f12fa0d139352ced0b4e85a8ec0a85f1d696b9ac94030653e3de6e85662",
+  "audit": {
+    "pipe_dimensions_m": [
+      3.2,
+      0.1143,
+      0.1143
+    ],
+    "coupling_dimensions_m": [
+      0.195,
+      0.127,
+      0.127
+    ],
+    "protector_dimensions_m": [
+      0.155,
+      0.1277,
+      0.1277
+    ],
+    "sleek_stage_dimensions_m": [
+      3.5,
+      0.104,
+      0.077
+    ],
+    "stealth_shuttle_dimensions_m": [
+      0.055,
+      0.055,
+      0.2429
+    ],
+    "horizontal_pipe_span_fraction": 0.846,
+    "projections": {
+      "left_red_coupling": {
+        "ndc_x": 0.077,
+        "ndc_y": 0.448,
+        "depth_m": 4.149
+      },
+      "center_top_spine": {
+        "ndc_x": 0.5,
+        "ndc_y": 0.4745,
+        "depth_m": 4.15
+      },
+      "right_red_protector": {
+        "ndc_x": 0.923,
+        "ndc_y": 0.448,
+        "depth_m": 4.149
+      },
+      "stealth_laser_shuttle": {
+        "ndc_x": 0.5,
+        "ndc_y": 0.5454,
+        "depth_m": 4.152
+      },
+      "sleek_linear_stage_bar": {
+        "ndc_x": 0.5,
+        "ndc_y": 0.6242,
+        "depth_m": 4.156
+      }
+    }
+  },
+  "renders": {
+    "beat1a_high_poise": {
+      "frame": 12,
+      "path": "c:\\Users\\kyle\\MPS\\slotted-liner\\marketing\\blender\\renders\\v10_lookdev\\beat1a_high_poise_f012.png",
+      "bytes": 1534666,
+      "sha256": "77c426ad52991bcab06ff4e666e4dcdffc5e617849546cd552fac62cd359c179"
+    },
+    "beat1c_lowered_pause": {
+      "frame": 56,
+      "path": "c:\\Users\\kyle\\MPS\\slotted-liner\\marketing\\blender\\renders\\v10_lookdev\\beat1c_lowered_pause_f056.png",
+      "bytes": 1538396,
+      "sha256": "8559dbb7896c6b709402cdd7db7f946670a4edfe9c34bc01207011c6889160ba"
+    },
+    "beat2_blue_laser_strike": {
+      "frame": 70,
+      "path": "c:\\Users\\kyle\\MPS\\slotted-liner\\marketing\\blender\\renders\\v10_lookdev\\beat2_blue_laser_strike_f070.png",
+      "bytes": 1572337,
+      "sha256": "71a64935483b5de02173fef4a4f934bae6ac8c229dd6a3fbab9362fa607a5677"
+    },
+    "beat3_afterglow": {
+      "frame": 82,
+      "path": "c:\\Users\\kyle\\MPS\\slotted-liner\\marketing\\blender\\renders\\v10_lookdev\\beat3_afterglow_f082.png",
+      "bytes": 1539141,
+      "sha256": "eabd0c0c6dfc9308f66d8d9fcef2679a3d55760ef11ac7f3fbb5f448c1a5eb03"
+    }
+  }
+}
