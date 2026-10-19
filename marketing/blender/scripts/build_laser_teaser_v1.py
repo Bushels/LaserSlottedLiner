@@ -1,30 +1,33 @@
 #!/usr/bin/env python3
-"""Build and render Look-Dev v8 ("Director's Cut") for the Laser Slotted Liner Teaser Campaign.
+"""Build and render Look-Dev v9 ("Cold-Precision Surgical Cut") for the Laser Slotted Liner Teaser Campaign.
 
-Director's Cut v8 Specification (Kyle's brief, 2026-10-17):
+Look-Dev v9 Specification (Kyle's engineering refinement brief, 2026-10-19):
 1. CAMERA FRAMING (Dramatic 3/4 Foreshortened Cinema Angle):
-   - Placed ~4.18 m from the center laser strike at a shallow ~22.8 deg foreshortened angle down the
+   - Placed ~4.25 m from the center laser strike at a shallow ~22.6 deg foreshortened angle down the
      9.0 m (30 ft) API 5CT 7" casing joint.
-   - Perspective foreshortening keeps BOTH the foreground Red API 7" Box Coupling (left, 2.57 m from lens,
+   - Perspective foreshortening keeps BOTH the foreground Red API 7" Box Coupling (left, 2.71 m from lens,
      with machined internal buttress threads visible inside the coupling mouth) AND the far Red Pin Thread
-     Protector (right, 11.02 m from lens) inside the 16:9 frame, while making the center pipe, vertical
+     Protector (right, 10.90 m from lens) inside the 16:9 frame, while making the center pipe, vertical
      optical laser barrel, and 85 mm laser beam ~4x larger and right in the viewer's face.
-   - Camera elevation is kept at a near-zero grazing pitch (0.34 deg above the 12 o'clock top spine) so
-     the open slot kerf hole remains 100% invisible ("Infer, Don't Show the Slot").
+   - Camera elevation is kept at a near-zero grazing pitch (z = +0.055 m, below the z = +0.0889 m top spine)
+     so the open slot kerf hole remains 100% invisible ("Infer, Don't Show the Slot").
 
-2. THE "WAIT... WHAT JUST HAPPENED?!" SUB-SECOND SURGICAL FLASH (0.29 s) + THROUGH-WALL SPARK JET:
-   - Beat 1 (Frames 1..63, 0.00s..2.62s): Absolute stillness. Glossy black-oxide 7" pipe with dual
+2. ZERO BOTTOM BURN-THROUGH & ZERO THERMAL HOT-SPOT (ENGINEER-SAFE COLD PRECISION):
+   - Strictly NO bottom-side sparks, NO under-pipe exit glow, and NO under-pipe point light (confirming the
+     beam never damages or burns through the opposite 6 o'clock casing wall).
+   - Strictly NO orange/red molten thermal puddle or glowing orange HAZ hot-spot during Beat 2 or Beat 3
+     (eliminating any engineering concern of heat-affected zone / metallurgical degradation).
+   - Beat 1 (Frames 1..64, 0.00s..2.67s): Absolute stillness. Glossy black-oxide 7" pipe with dual
      liquid-mercury grazing sheen lines and the sleek vertical optical laser barrel poised 85 mm above.
-   - Beat 1b (Frames 64..67, 2.67s..2.79s): 4-frame (0.17s) optical lock-on micro-cue — a pinpoint cyan
+   - Beat 1b (Frames 65..67, 2.71s..2.79s): 3-frame (0.12s) optical lock-on micro-cue — a pinpoint cyan
      targeting diode dot snaps onto the 12 o'clock spine and the smoked-bronze sensor collar glints.
-   - Beat 2 (Frames 68..75, 2.83s..3.12s — 0.29s / 7 frames): Blinding 12 kW surgical flash!
+   - Beat 2 (Frames 68..72, 2.83s..3.00s — 4 frames / 0.17s): Blink-and-you-miss-it ultra-fast surgical flash!
      - Above the pipe: Needle-thin vertical white-cyan laser shaft (1.3 mm core + 3.4 mm cyan sheath)
-       zips 60 mm along the 12 o'clock top spine, igniting a white-cyan keyhole + warm molten gold pool.
-     - Below the pipe: A high-velocity downward jet of incandescent molten tungsten-gold sparks erupts
-       from beneath the 6 o'clock bottom edge of the pipe (proving the laser pierced clean through the
-       heavy steel casing wall in 0.29 seconds without ever showing the slot face).
-   - Beat 3 (Frames 76..160, 3.17s..6.67s): Instant 1-frame blackout. The vertical laser barrel sits
-     parked at +30 mm while a razor-thin glowing orange-red thermal kerf scar cools on the top spine.
+       zips 60 mm along the 12 o'clock top spine in just 0.17 seconds with a razor-tight actinic
+       white-cyan optical pinpoint and fine low-angle top-crown micro-sparks (zero big white blob on the pipe).
+   - Beat 3 (Frames 73..160, 3.04s..6.67s): Instant 1-frame blackout. The vertical laser barrel sits
+     parked at +30 mm while the 12 o'clock top spine is left cold and dark (zero glowing orange hot-spot),
+     with a faint whisper of cool silver-blue assist-gas vapor dissipating over 0.6s before the end-card hook.
 """
 
 from __future__ import annotations
@@ -47,11 +50,6 @@ PIPE_OD_M = 0.1778          # 7.000 in API 5CT casing/liner OD
 PIPE_ID_M = 0.1571          # 6.184 in ID (29 lb/ft wall = 10.36 mm)
 PIPE_LEN_M = 9.000          # 9.0 m Range 2 joint
 
-# In the 3/4 foreshortened cinema view, the 9.0 m pipe spans from x = -1.55 m (foreground left)
-# to x = +7.45 m (background right) so that the entire foreground Red API Box Coupling (with its
-# beveled mouth and internal threads) sits cleanly inside the left frame margin (ndc_x ~ 0.08..0.17),
-# the laser head & strike at x = 0.0 m sit right at the visual center (ndc_x ~ 0.48), and the far
-# Red Pin Protector sits inside the right margin (ndc_x ~ 0.92)!
 PIPE_X_START = -1.720
 PIPE_X_END = PIPE_X_START + PIPE_LEN_M  # +7.280 m
 PIPE_X_MID = 0.5 * (PIPE_X_START + PIPE_X_END)  # +2.780 m
@@ -62,7 +60,7 @@ COUPLING_LEN_M = 0.270      # Box coupling length on left (-X) end
 PROTECTOR_OD_M = 0.1915     # 7.54 in closed-end pin thread protector OD
 PROTECTOR_LEN_M = 0.210     # Pin protector length on right (+X) end
 
-SLOT_LEN_M = 0.060          # 60 mm single center pass along top spine (x = -0.030 .. +0.030 m)
+SLOT_LEN_M = 0.110          # 110 mm high-speed axial stroke along top spine (x = -0.055 .. +0.055 m)
 
 # 3/4 Foreshortened Cinema Camera Parameters (4.25 m from center strike, shallow ~22.6 deg angle)
 CAM_LOCATION = Vector((-3.920, -1.640, 0.055))
@@ -71,15 +69,15 @@ CAM_LENS_MM = 57.0
 
 # Keyframes for the 3-beat teaser (24 fps, 160 frames = 6.67 s)
 FRAME_START = 1
-FRAME_PRE_PULSE = 64        # 2.67 s: 4-frame (0.17 s) optical targeting lock-on micro-cue
-FRAME_FIRE_START = 68       # 2.83 s: blinding 12 kW laser strike begins
-FRAME_FIRE_END = 75         # 3.12 s: 7 frames (0.29 s) surgical flash & through-wall spark jet!
-FRAME_END = 160             # 6.67 s: instant blackout & cooling orange kerf ember
+FRAME_PRE_PULSE = 65        # 2.71 s: 3-frame (0.12 s) optical targeting lock-on micro-cue
+FRAME_FIRE_START = 68       # 2.83 s: ultra-fast 12 kW cold surgical laser strike begins (x = -0.055 m)
+FRAME_FIRE_END = 72         # 3.00 s: 4 frames (0.17 s) ultra-fast surgical flash to x = +0.055 m!
+FRAME_END = 160             # 6.67 s: instant cold blackout & end-card hook reveal
 
 CHECK_FRAMES = {
     "beat1_stillness": 45,
-    "beat2_laser_strike": 72,
-    "beat3_afterglow": 92,
+    "beat2_laser_strike": 70,
+    "beat3_afterglow": 82,
 }
 
 
@@ -353,24 +351,24 @@ def build_materials() -> dict[str, bpy.types.Material]:
         l_g.new(mix_g.outputs["Shader"], out_g.inputs["Surface"])
         return mat
 
-    mats["plasma_halo"] = make_radial_glow_mat("Laser_Plasma_Halo", (0.45, 0.84, 1.0), exponent=3.8)
-    mats["molten_contact"] = make_radial_glow_mat("Laser_Molten_Contact_Mat", (1.0, 0.46, 0.08), exponent=3.2)
-    mats["ember_halo"] = make_radial_glow_mat("Laser_Ember_Halo", (1.0, 0.36, 0.05), exponent=3.2)
-    mats["under_pierce_halo"] = make_radial_glow_mat("Under_Pierce_Halo", (1.0, 0.52, 0.12), exponent=3.0)
+    mats["plasma_halo"] = make_radial_glow_mat("Laser_Plasma_Halo", (0.48, 0.86, 1.0), exponent=4.4)
+    mats["molten_contact"] = make_radial_glow_mat("Laser_Molten_Contact_Mat", (0.68, 0.92, 1.0), exponent=4.6)
+    mats["ember_halo"] = make_radial_glow_mat("Laser_Ember_Halo", (0.38, 0.72, 0.96), exponent=4.2)
+    mats["under_pierce_halo"] = make_radial_glow_mat("Under_Pierce_Halo", (0.0, 0.0, 0.0), exponent=4.0)
 
-    # 8. Top-Spine 3D Thermal Horizon Kerf Bead (strictly at 12 o'clock top dead center)
+    # 8. Top-Spine 3D Cold-Precision Machined Kerf Horizon Line (zero orange/red hot-spot!)
     mat_slot = bpy.data.materials.new("Top_Spine_Thermal_Horizon")
     bsdf_sl = get_node_by_type(mat_slot.node_tree, "ShaderNodeBsdfPrincipled")
-    bsdf_sl.inputs["Base Color"].default_value = (0.02, 0.02, 0.02, 1.0)
-    bsdf_sl.inputs["Emission Color"].default_value = (1.0, 0.38, 0.06, 1.0)
+    bsdf_sl.inputs["Base Color"].default_value = (0.015, 0.018, 0.022, 1.0)
+    bsdf_sl.inputs["Emission Color"].default_value = (0.55, 0.86, 1.0, 1.0)
     bsdf_sl.inputs["Emission Strength"].default_value = 0.0
     mats["slot"] = mat_slot
 
-    # 9. Molten Micro-Spark & Through-Wall Pierce Jet Material (Warm Incandescent Tungsten-Gold)
+    # 9. Fine Top-Crown Cold-Precision Plasma Micro-Sparks (Actinic Ice-White / Silver-Cyan — zero orange slag)
     mat_spark = bpy.data.materials.new("Laser_Plasma_Sparks")
     bsdf_sp = get_node_by_type(mat_spark.node_tree, "ShaderNodeBsdfPrincipled")
-    bsdf_sp.inputs["Base Color"].default_value = (1.0, 0.78, 0.36, 1.0)
-    bsdf_sp.inputs["Emission Color"].default_value = (1.0, 0.60, 0.16, 1.0)
+    bsdf_sp.inputs["Base Color"].default_value = (0.88, 0.96, 1.0, 1.0)
+    bsdf_sp.inputs["Emission Color"].default_value = (0.72, 0.92, 1.0, 1.0)
     bsdf_sp.inputs["Emission Strength"].default_value = 0.0
     mats["spark"] = mat_spark
 
@@ -427,11 +425,11 @@ def build_pipe_and_red_ends(mats: dict[str, bpy.types.Material]) -> dict[str, bp
     objs: dict[str, bpy.types.Object] = {}
     r_out = PIPE_OD_M / 2.0
     r_in = PIPE_ID_M / 2.0
-    x_start = PIPE_X_START   # -1.900 m
-    x_end = PIPE_X_END       # +7.100 m (9.000 m total length)
+    x_start = PIPE_X_START   # -1.720 m
+    x_end = PIPE_X_END       # +7.280 m (9.000 m total length)
     chamfer = 0.003
 
-    # 1. 9.0 m 7" OD Hollow Liner Pipe (x = -1.900 m to +7.100 m)
+    # 1. 9.0 m 7" OD Hollow Liner Pipe (x = -1.720 m to +7.280 m)
     pipe_profile = [
         (x_start, r_in),
         (x_start, r_out - chamfer),
@@ -470,8 +468,7 @@ def build_pipe_and_red_ends(mats: dict[str, bpy.types.Material]) -> dict[str, bp
     ]
     objs["standoff_right"] = create_lathed_profile("Thread_Standoff_Right", standoff_right, segments=96, material=mats["machined"])
 
-    # 3. Red API 7" Box Coupling on Foreground Left End (x = -1.980 m to -1.710 m)
-    # Outer shell in oilfield crimson; internal recessed mouth has machined steel API buttress threads!
+    # 3. Red API 7" Box Coupling on Foreground Left End
     r_coup = COUPLING_OD_M / 2.0
     x_c0 = x_start - 0.080
     x_c1 = x_c0 + COUPLING_LEN_M
@@ -506,7 +503,7 @@ def build_pipe_and_red_ends(mats: dict[str, bpy.types.Material]) -> dict[str, bp
         "Coupling_Internal_Threads_Left", thread_profile, segments=96, material=mats["machined"]
     )
 
-    # 4. Red Pin-End Thread Protector on Background Right End (x = +6.935 m to +7.145 m)
+    # 4. Red Pin-End Thread Protector on Background Right End
     r_prot = PROTECTOR_OD_M / 2.0
     x_p0 = x_end - 0.165
     x_p1 = x_p0 + PROTECTOR_LEN_M
@@ -532,7 +529,7 @@ def build_pipe_and_red_ends(mats: dict[str, bpy.types.Material]) -> dict[str, bp
 
 
 def build_mysterious_laser_head(mats: dict[str, bpy.types.Material]) -> dict[str, bpy.types.Object]:
-    """Look-Dev v8: Sleek Monolithic Vertical Cylindrical/Tapered Optical Laser Head Suspended from a Whisper-Dark Overhead Gantry.
+    """Look-Dev v9: Sleek Monolithic Vertical Cylindrical/Tapered Optical Laser Head Suspended from a Whisper-Dark Overhead Gantry.
     - Macro-engineered proportions (64 mm max barrel OD = 36% of pipe OD, 202.6 mm tall) with zero sub-pixel aliasing.
     - Standoff gap = 85.0 mm (`z = 0.0889 m` pipe top spine to `z = 0.1739 m` conical nozzle tip).
     """
@@ -681,24 +678,21 @@ def build_center_slot_and_laser_fx(
     mats: dict[str, bpy.types.Material],
     shuttle_obj: bpy.types.Object,
 ) -> dict[str, bpy.types.Object]:
-    """Look-Dev v8:
+    """Look-Dev v9 ("Cold-Precision Surgical Cut"):
     - Above Pipe (`z = 0.0889 .. 0.1739 m`): Needle-thin white-cyan laser shaft + coaxial cyan sheath +
-      two-tone white-cyan keyhole & warm molten gold contact pool.
-    - Below Pipe (`z = -0.0889 .. -0.250 m`): High-velocity Through-Wall Molten Spark Jet & underside exit glow
-      proving the 12 kW beam pierced cleanly through the 10.36 mm steel wall in 0.29 seconds!
-    - Along 12 o'clock Top Spine (`x = -0.030 .. +0.030 m`): 3D incandescent thermal kerf bead that glows in Beat 3.
+      razor-tight actinic white-cyan pinpoint at the 12 o'clock spine (NO big glowing white blob, NO orange hot-spot).
+    - Below Pipe: Strictly ZERO sparks and ZERO glow beneath the pipe (proving the laser never burns the far wall).
+    - Beat 3 Aftermath: Cold, dark top spine with only a whisper-faint cool silver-blue assist-gas vapor wisp.
     """
     objs: dict[str, bpy.types.Object] = {}
     r_pipe = PIPE_OD_M / 2.0  # 0.0889 m
     standoff_gap_m = 0.0850   # 85.0 mm vertical beam length
     beam_mid_z = r_pipe + 0.5 * standoff_gap_m  # 0.1314 m
 
-    # Camera-facing yaw angle around Z so optical flare quads face the 3/4 camera (-3.85, -1.62) perpendicularly
     to_cam_xy = Vector((CAM_LOCATION.x, CAM_LOCATION.y, 0.0)).normalized()
-    # Default quad normal after +90 deg X rotation is (0, -1, 0); angle from (0, -1, 0) to to_cam_xy:
     quad_yaw_z = math.atan2(to_cam_xy.x, -to_cam_xy.y)
 
-    # 1. 3D Top-Spine Thermal Horizon Kerf Bead (strictly at 12 o'clock top dead center, x = -0.030 .. +0.030 m)
+    # 1. 3D Top-Spine Cold-Precision Machined Kerf Hairline (anchored at x = -0.055 m, grows to +0.055 m behind beam!)
     mesh_slot = bpy.data.meshes.new("Top_Spine_Thermal_Edge")
     bm_s = bmesh.new()
     bmesh.ops.create_cone(
@@ -706,13 +700,14 @@ def build_center_slot_and_laser_fx(
         cap_ends=True,
         cap_tris=True,
         segments=24,
-        radius1=0.00085,
-        radius2=0.00085,
+        radius1=0.00045,
+        radius2=0.00045,
         depth=SLOT_LEN_M,
     )
     bmesh.ops.rotate(bm_s, verts=bm_s.verts, cent=(0, 0, 0), matrix=Matrix.Rotation(math.radians(90.0), 3, "Y"))
     for v in bm_s.verts:
-        v.co.z = r_pipe + 0.0003 + v.co.z * 0.45
+        v.co.x += 0.5 * SLOT_LEN_M
+        v.co.z = r_pipe + 0.00025 + v.co.z * 0.35
     for f in bm_s.faces:
         f.smooth = True
     bm_s.to_mesh(mesh_slot)
@@ -720,8 +715,11 @@ def build_center_slot_and_laser_fx(
 
     obj_slot = bpy.data.objects.new("Top_Spine_Thermal_Edge", mesh_slot)
     bpy.context.scene.collection.objects.link(obj_slot)
+    obj_slot.location = Vector((-0.5 * SLOT_LEN_M, 0.0, 0.0))
     obj_slot.data.materials.append(mats["slot"])
     obj_slot.visible_shadow = False
+    obj_slot.visible_diffuse = False
+    obj_slot.visible_glossy = False
     objs["slot"] = obj_slot
 
     # 2a. Layer 1 — Surgical Needle-Thin White-Cyan Core (1.3 mm waist at pipe -> 1.8 mm at nozzle tip)
@@ -746,6 +744,8 @@ def build_center_slot_and_laser_fx(
     bpy.context.scene.collection.objects.link(obj_beam)
     obj_beam.data.materials.append(mats["beam"])
     obj_beam.visible_shadow = False
+    obj_beam.visible_diffuse = False
+    obj_beam.visible_glossy = False
     obj_beam.parent = shuttle_obj
     objs["beam"] = obj_beam
 
@@ -774,6 +774,7 @@ def build_center_slot_and_laser_fx(
     obj_sheath.data.materials.append(mats["beam_sheath"])
     obj_sheath.visible_shadow = False
     obj_sheath.visible_diffuse = False
+    obj_sheath.visible_glossy = False
     obj_sheath.parent = shuttle_obj
     objs["beam_sheath"] = obj_sheath
 
@@ -803,36 +804,38 @@ def build_center_slot_and_laser_fx(
         o_q.data.materials.append(mat)
         o_q.visible_shadow = False
         o_q.visible_diffuse = False
+        o_q.visible_glossy = False
         if parent is not None:
             o_q.parent = parent
         return o_q
 
-    # 3a. Tight white-cyan keyhole pinpoint right where the needle beam pierces the pipe crown
-    objs["plasma_bloom"] = make_glow_quad("Laser_Plasma_Bloom", 0.024, 0.013, r_pipe + 0.0014, mats["plasma_halo"], shuttle_obj)
-    # 3b. Warm molten gold-orange thermal contact pool hugging the 12 o'clock pipe spine
-    objs["molten_contact"] = make_glow_quad("Laser_Molten_Contact_Pool", 0.066, 0.015, r_pipe + 0.0010, mats["molten_contact"], shuttle_obj)
+    # 3a. Surgical 7.5 mm x 5.0 mm white-cyan keyhole pinpoint right where the needle beam touches the 12 o'clock crown
+    objs["plasma_bloom"] = make_glow_quad("Laser_Plasma_Bloom", 0.0075, 0.0050, r_pipe + 0.0012, mats["plasma_halo"], shuttle_obj)
+    # 3b. Tight 12 mm x 3.8 mm cool cyan-white assist-gas ionization cushion hugging the 12 o'clock crown (zero hot-spot!)
+    objs["molten_contact"] = make_glow_quad("Laser_Molten_Contact_Pool", 0.0120, 0.0038, r_pipe + 0.0010, mats["molten_contact"], shuttle_obj)
     # 3c. Crisp optical exit glint right at the conical nozzle orifice (z = 0.1739 m)
-    objs["nozzle_glint"] = make_glow_quad("Laser_Nozzle_Exit_Glint", 0.013, 0.013, r_pipe + standoff_gap_m, mats["plasma_halo"], shuttle_obj)
+    objs["nozzle_glint"] = make_glow_quad("Laser_Nozzle_Exit_Glint", 0.011, 0.011, r_pipe + standoff_gap_m, mats["plasma_halo"], shuttle_obj)
     # 3d. Razor-thin horizontal anamorphic optical lens streak at the pierce point
-    objs["anamorphic_streak"] = make_glow_quad("Laser_Anamorphic_Streak", 0.240, 0.0040, r_pipe + 0.0015, mats["plasma_halo"], shuttle_obj)
-    # 3e. Post-cut warm residual horizon shimmer right along the 60 mm top spine (Beat 3 inference cue!)
-    objs["ember_shimmer"] = make_glow_quad("Top_Spine_Ember_Shimmer", 0.068, 0.014, r_pipe + 0.0018, mats["ember_halo"], None, face_camera=False)
-    # 3f. Tight Under-Pipe 6 o'clock Through-Wall Exit Pinpoint Glow (strictly at the 6 o'clock bottom keel!)
-    objs["under_exit_glow"] = make_glow_quad("Under_Pipe_Exit_Glow", 0.026, 0.014, -r_pipe - 0.0025, mats["under_pierce_halo"], shuttle_obj)
+    objs["anamorphic_streak"] = make_glow_quad("Laser_Anamorphic_Streak", 0.130, 0.0022, r_pipe + 0.0014, mats["plasma_halo"], shuttle_obj)
+    # 3e. Whisper-faint cool silver-blue assist-gas vapor wisp above the 60 mm top spine (zero hot-spot!)
+    objs["ember_shimmer"] = make_glow_quad("Top_Spine_Ember_Shimmer", 0.055, 0.0055, r_pipe + 0.0026, mats["ember_halo"], None, face_camera=False)
+    # 3f. Dummy hidden under-exit quad (kept in dict for API compatibility, permanently hidden & 0 emission)
+    objs["under_exit_glow"] = make_glow_quad("Under_Pipe_Exit_Glow", 0.001, 0.001, -r_pipe - 0.0025, mats["under_pierce_halo"], shuttle_obj)
 
-    # 4. Top-Crown Low-Angle Micro-Sparks + Downward Through-Wall Molten Spark Jet (Under Pipe!)
+    # 4. Fine Top-Crown Low-Angle Cold Plasma Micro-Sparks ONLY (Strictly ZERO bottom-side sparks!)
     mesh_sparks = bpy.data.meshes.new("Laser_Micro_Sparks")
     bm_sp = bmesh.new()
 
-    # 4a. Fine top-crown sparks skimming the 12 o'clock impact point
     top_origin = Vector((0.0, 0.0, r_pipe + 0.0010))
     top_spark_vectors = [
-        (-0.020, -0.004, 0.007, 0.00034),
-        (-0.032, -0.005, 0.004, 0.00030),
-        (0.018, -0.004, 0.006, 0.00034),
-        (0.028, 0.004, 0.003, 0.00030),
-        (-0.011, -0.005, 0.009, 0.00030),
-        (0.010, 0.004, 0.008, 0.00030),
+        (-0.018, -0.003, 0.0065, 0.00028),
+        (-0.028, -0.004, 0.0038, 0.00024),
+        (0.017, -0.003, 0.0060, 0.00028),
+        (0.026, 0.003, 0.0032, 0.00024),
+        (-0.010, -0.004, 0.0085, 0.00024),
+        (0.009, 0.003, 0.0080, 0.00024),
+        (-0.005, -0.002, 0.0105, 0.00022),
+        (0.005, 0.002, 0.0100, 0.00022),
     ]
     for dx, dy, dz, rad in top_spark_vectors:
         tip = top_origin + Vector((dx, dy, dz))
@@ -844,48 +847,14 @@ def build_center_slot_and_laser_fx(
         rot_mat = vec.normalized().to_track_quat("Z", "X").to_matrix().to_4x4()
         bmesh.ops.transform(bm_sp, matrix=Matrix.Translation(mid) @ rot_mat, verts=ret["verts"])
 
-    # 4b. High-Velocity Downward Through-Wall Molten Spark Jet exiting beneath the 6 o'clock pipe keel!
-    bot_origin = Vector((0.0, 0.0, -r_pipe + 0.001))
-    under_jet_sparks = [
-        # Root high-velocity assist-gas core emerging from 6 o'clock keel
-        ((0.000, 0.000, -0.001), (-0.004, -0.001, -0.034), 0.00038),
-        ((-0.002, -0.001, -0.004), (-0.008, -0.003, -0.042), 0.00034),
-        ((+0.002, +0.001, -0.003), (+0.005, +0.002, -0.036), 0.00034),
-        # Mid-plume detached high-velocity spark needles
-        ((-0.005, -0.002, -0.024), (-0.011, -0.004, -0.030), 0.00028),
-        ((+0.004, -0.002, -0.022), (+0.009, -0.003, -0.028), 0.00028),
-        ((-0.008, +0.002, -0.034), (-0.014, +0.004, -0.032), 0.00026),
-        ((+0.006, +0.002, -0.030), (+0.012, +0.005, -0.026), 0.00026),
-        ((-0.002, -0.002, -0.046), (-0.006, -0.004, -0.028), 0.00024),
-        ((+0.002, -0.001, -0.050), (+0.005, -0.003, -0.025), 0.00022),
-        # Lower shower of fine micro-sparks & incandescent droplets (-58 mm to -125 mm)
-        ((-0.013, -0.003, -0.056), (-0.015, -0.005, -0.024), 0.00022),
-        ((+0.011, -0.002, -0.060), (+0.013, -0.004, -0.022), 0.00022),
-        ((-0.007, +0.002, -0.074), (-0.009, +0.003, -0.020), 0.00020),
-        ((+0.005, -0.002, -0.078), (+0.007, -0.002, -0.019), 0.00020),
-        ((-0.019, -0.005, -0.068), (-0.012, -0.004, -0.016), 0.00018),
-        ((+0.016, +0.004, -0.070), (+0.010, +0.003, -0.015), 0.00018),
-        ((-0.003, -0.001, -0.096), (-0.004, -0.002, -0.014), 0.00018),
-        ((+0.004, +0.001, -0.102), (+0.003, +0.001, -0.012), 0.00016),
-        ((-0.010, -0.002, -0.112), (-0.005, -0.002, -0.010), 0.00016),
-    ]
-    for s_off, l_vec, rad in under_jet_sparks:
-        p0 = bot_origin + Vector(s_off)
-        vec = Vector(l_vec)
-        p1 = p0 + vec
-        mid = p0.lerp(p1, 0.5)
-        ret = bmesh.ops.create_cone(
-            bm_sp, cap_ends=True, cap_tris=True, segments=8, radius1=rad, radius2=rad * 0.20, depth=vec.length
-        )
-        rot_mat = vec.normalized().to_track_quat("Z", "X").to_matrix().to_4x4()
-        bmesh.ops.transform(bm_sp, matrix=Matrix.Translation(mid) @ rot_mat, verts=ret["verts"])
-
     bm_sp.to_mesh(mesh_sparks)
     bm_sp.free()
     obj_sparks = bpy.data.objects.new("Laser_Micro_Sparks", mesh_sparks)
     bpy.context.scene.collection.objects.link(obj_sparks)
     obj_sparks.data.materials.append(mats["spark"])
     obj_sparks.visible_shadow = False
+    obj_sparks.visible_diffuse = False
+    obj_sparks.visible_glossy = False
     obj_sparks.parent = shuttle_obj
     objs["sparks"] = obj_sparks
 
@@ -1070,15 +1039,15 @@ def setup_world_and_lights(
         receiver_col=col_rail_recv,
     )
 
-    # 6. Dynamic Laser Strike Point Lights
-    # 6a. Tight Pinpoint Flash right at the 12 o'clock top spine contact point
+    # 6. Dynamic Laser Strike Point Lights (Cold-Precision Optical Flash ONLY — zero orange HAZ hot-spot!)
+    # 6a. Tight Pinpoint Optical Flash right at the 12 o'clock top spine contact point
     p_flash = bpy.data.lights.new("Laser_Strike_Optical_Flash", "POINT")
     p_flash.energy = 0.0
-    p_flash.color = (0.68, 0.90, 1.0)
-    p_flash.shadow_soft_size = 0.008
+    p_flash.color = (0.62, 0.88, 1.0)
+    p_flash.shadow_soft_size = 0.004
     obj_flash = bpy.data.objects.new("Laser_Strike_Optical_Flash", p_flash)
     scene.collection.objects.link(obj_flash)
-    obj_flash.location = Vector((0.0, -0.020, PIPE_OD_M / 2.0 + 0.014))
+    obj_flash.location = Vector((0.0, -0.010, PIPE_OD_M / 2.0 + 0.010))
     obj_flash.light_linking.receiver_collection = col_pipe_recv
     obj_flash.parent = shuttle_obj
     lights["laser_flash"] = obj_flash
@@ -1095,22 +1064,21 @@ def setup_world_and_lights(
     obj_bounce.parent = shuttle_obj
     lights["head_belly_bounce"] = obj_bounce
 
-    # 6c. Warm Molten Kerf Afterglow Point Light right at the 12 o'clock top spine (`col_pipe_recv` ONLY)
+    # 6c. Cool Assist-Gas Rim Glint right at the 12 o'clock top spine (`col_pipe_recv` ONLY — zero orange glow!)
     p_ember = bpy.data.lights.new("Laser_Kerf_Warm_Glow", "POINT")
     p_ember.energy = 0.0
-    p_ember.color = (1.0, 0.40, 0.07)
-    p_ember.shadow_soft_size = 0.005
+    p_ember.color = (0.48, 0.82, 1.0)
+    p_ember.shadow_soft_size = 0.004
     obj_ember = bpy.data.objects.new("Laser_Kerf_Warm_Glow", p_ember)
     scene.collection.objects.link(obj_ember)
-    obj_ember.location = Vector((0.0, -0.018, PIPE_OD_M / 2.0 + 0.008))
+    obj_ember.location = Vector((0.0, -0.012, PIPE_OD_M / 2.0 + 0.006))
     obj_ember.light_linking.receiver_collection = col_pipe_recv
     lights["kerf_ember"] = obj_ember
 
-    # 6d. Under-Pipe Through-Wall Spark Jet Point Light (`col_pipe_recv` ONLY — positioned directly beneath
-    # the 6 o'clock bottom keel at y = +0.004 m so it only kisses the very bottom edge, never the front cheek!)
+    # 6d. Dummy Under-Pipe Point Light (kept at 0.0 W permanently — strictly zero bottom burn-through!)
     p_under = bpy.data.lights.new("Under_Pipe_Pierce_Light", "POINT")
     p_under.energy = 0.0
-    p_under.color = (1.0, 0.48, 0.10)
+    p_under.color = (0.0, 0.0, 0.0)
     p_under.shadow_soft_size = 0.008
     obj_under = bpy.data.objects.new("Under_Pipe_Pierce_Light", p_under)
     scene.collection.objects.link(obj_under)
@@ -1123,8 +1091,8 @@ def setup_world_and_lights(
 
 
 def setup_camera(scene: bpy.types.Scene) -> bpy.types.Object:
-    """Director's Cut v8: Dramatic 3/4 Foreshortened Cinema Angle (~4.18 m from center laser strike,
-    ~22.8 deg angle down the 9.0 m pipe). Keeps BOTH the foreground left red API coupling and background
+    """Look-Dev v9: Dramatic 3/4 Foreshortened Cinema Angle (~4.25 m from center laser strike,
+    ~22.6 deg angle down the 9.0 m pipe). Keeps BOTH the foreground left red API coupling and background
     right red thread protector in the 16:9 frame while making the center laser head & pipe ~4x larger!
     """
     cam_data = bpy.data.cameras.new("Hero_3Quarter_Cinema_Cam")
@@ -1146,7 +1114,7 @@ def setup_camera(scene: bpy.types.Scene) -> bpy.types.Object:
 
 
 # ==============================================================================
-# ANIMATION TIMELINE (BEAT 1 STILLNESS -> 0.17s PULSE -> 0.29s FLASH -> AFTERGLOW)
+# ANIMATION TIMELINE (BEAT 1 STILLNESS -> 0.12s PULSE -> 0.17s FLASH -> COLD AFTERMATH)
 # ==============================================================================
 def animate_laser_sequence(
     shuttle_obj: bpy.types.Object,
@@ -1179,21 +1147,27 @@ def animate_laser_sequence(
     under_exit_glow = fx_objs["under_exit_glow"]
     slot_obj = fx_objs["slot"]
 
-    strike_only_objs = (beam_obj, sheath_obj, sparks_obj, molten_contact, anamorphic_streak, under_exit_glow)
+    strike_only_objs = (beam_obj, sheath_obj, sparks_obj, molten_contact, anamorphic_streak)
     pre_and_strike_objs = (plasma_bloom, nozzle_glint)
 
+    half_stroke = 0.5 * SLOT_LEN_M  # 0.055 m (110 mm total high-speed traverse)
     for f in range(FRAME_START, FRAME_END + 1):
         if f <= FRAME_FIRE_START:
-            x_shuttle = -0.030
+            x_shuttle = -half_stroke
         elif f >= FRAME_FIRE_END:
-            x_shuttle = +0.030
+            x_shuttle = +half_stroke
         else:
             u_move = (f - FRAME_FIRE_START) / float(FRAME_FIRE_END - FRAME_FIRE_START)
-            x_shuttle = -0.030 + 0.060 * u_move
+            x_shuttle = -half_stroke + SLOT_LEN_M * u_move
         shuttle_obj.location = Vector((x_shuttle, 0.0, 0.0))
         shuttle_obj.keyframe_insert(data_path="location", frame=f)
+
+        # Permanently hide under_exit_glow so the bottom of the pipe is 100% untouched
+        under_exit_glow.hide_render = True
+        under_exit_glow.keyframe_insert(data_path="hide_render", frame=f)
+
         if f < FRAME_PRE_PULSE:
-            # Beat 1 (Frames 1..63): Complete stillness before the strike
+            # Beat 1 (Frames 1..64): Complete stillness before the strike (head poised at x = -0.055 m)
             beam_em = 0.0
             sheath_em = 0.0
             plasma_em = 0.0
@@ -1211,19 +1185,18 @@ def animate_laser_sequence(
             hide_strike = True
             hide_afterglow = True
         elif FRAME_PRE_PULSE <= f < FRAME_FIRE_START:
-            # Beat 1b (Frames 64..67, 0.17s): Pre-strike optical lock-on micro-cue!
-            # Pinpoint cyan targeting glint at nozzle tip & pipe spine pulls viewer's eye right before the flash
+            # Beat 1b (Frames 65..67, 0.12s): Pre-strike optical lock-on micro-cue at x = -0.055 m!
             u_pre = (f - FRAME_PRE_PULSE + 1) / float(FRAME_FIRE_START - FRAME_PRE_PULSE)
             beam_em = 0.0
             sheath_em = 0.0
-            plasma_em = 32.0 * u_pre
+            plasma_em = 24.0 * u_pre
             molten_em = 0.0
             ember_halo_em = 0.0
             under_halo_em = 0.0
             slot_em = 0.0
             spark_em = 0.0
-            flash_w = 4.5 * u_pre
-            bounce_w = 6.0 * u_pre
+            flash_w = 0.0
+            bounce_w = 5.5 * u_pre
             ember_w = 0.0
             under_w = 0.0
             slot_scale_x = 0.001
@@ -1231,40 +1204,48 @@ def animate_laser_sequence(
             hide_strike = True
             hide_afterglow = True
         elif FRAME_FIRE_START <= f <= FRAME_FIRE_END:
-            # Beat 2 (Frames 68..75, 0.29s / 7 frames): Blinding 12 kW surgical flash + through-wall spark jet!
+            # Beat 2 (Frames 68..72, 0.17s / 4 frames): Ultra-fast 110 mm cold surgical flash (660 mm/s)!
+            # Tight actinic white-cyan pinpoint zips from -55 mm to +55 mm along the 12 o'clock crown,
+            # progressively revealing the razor-thin cold-precision silver-cyan machined kerf hairline behind it!
             u = (f - FRAME_FIRE_START) / float(FRAME_FIRE_END - FRAME_FIRE_START)
-            pulse = 1.0 + 0.14 * math.sin(u * math.pi * 3.0)
+            pulse = 1.0 + 0.12 * math.sin(u * math.pi * 2.0)
             beam_em = 2600.0 * pulse
             sheath_em = 52.0 * pulse
-            plasma_em = 175.0 * pulse
-            molten_em = 155.0 * pulse
-            ember_halo_em = 65.0
-            under_halo_em = 95.0 * pulse
-            slot_em = 220.0
-            spark_em = 380.0 * pulse
-            flash_w = 115.0 * pulse
-            bounce_w = 38.0 * pulse
-            ember_w = 32.0
-            under_w = 12.0 * pulse
-            slot_scale_x = max(0.08, u)
+            plasma_em = 115.0 * pulse
+            molten_em = 45.0 * pulse
+            ember_halo_em = 10.0 * pulse
+            under_halo_em = 0.0
+            slot_em = 28.0 * pulse
+            spark_em = 280.0 * pulse
+            flash_w = 0.0
+            bounce_w = 36.0 * pulse
+            ember_w = 0.0
+            under_w = 0.0
+            slot_scale_x = max(0.05, u)
             hide_pre = False
             hide_strike = False
             hide_afterglow = False
         else:
-            # Beat 3 (Frames 76..160): Instant 1-frame blackout! Glowing orange top-spine kerf ember cools in silence
-            dt = (f - FRAME_FIRE_END) / float(FRAME_END - FRAME_FIRE_END)
-            decay = math.exp(-2.0 * dt)
+            # Beat 3 (Frames 73..160): Instant 1-frame cold blackout!
+            # The laser head sits parked at x = +0.055 m (+55 mm right of center, 110 mm right of Beat 1),
+            # and a crisp, razor-thin cold-precision silver-cyan machined kerf hairline remains visible along
+            # the 110 mm top spine (zero orange HAZ hot-spot, zero glowing puddle!).
+            dt_frames = float(f - FRAME_FIRE_END)
+            if dt_frames >= 24.0:
+                gas_decay = 0.0
+            else:
+                gas_decay = math.exp(-dt_frames / 10.0) * (1.0 - dt_frames / 24.0)
             beam_em = 0.0
             sheath_em = 0.0
             plasma_em = 0.0
             molten_em = 0.0
-            ember_halo_em = 52.0 * decay
+            ember_halo_em = 1.6 + 4.5 * gas_decay
             under_halo_em = 0.0
-            slot_em = 135.0 * decay
+            slot_em = 6.2 + 8.0 * gas_decay
             spark_em = 0.0
             flash_w = 0.0
             bounce_w = 0.0
-            ember_w = 22.0 * decay
+            ember_w = 0.0
             under_w = 0.0
             slot_scale_x = 1.0
             hide_pre = True
@@ -1413,7 +1394,7 @@ def sha256_file(path: Path) -> str:
 
 
 def main() -> None:
-    out_dir = Path(r"c:\Users\kyle\MPS\slotted-liner\marketing\blender\renders\v8_lookdev")
+    out_dir = Path(r"c:\Users\kyle\MPS\slotted-liner\marketing\blender\renders\v9_lookdev")
     scene_dir = Path(r"c:\Users\kyle\MPS\slotted-liner\marketing\blender\scenes")
     out_dir.mkdir(parents=True, exist_ok=True)
     scene_dir.mkdir(parents=True, exist_ok=True)
@@ -1433,7 +1414,7 @@ def main() -> None:
     scene.frame_set(CHECK_FRAMES["beat1_stillness"])
     audit = audit_scene_geometry(scene, cam, pipe_objs, head_objs)
 
-    blend_path = scene_dir / "laser_slotted_liner_teaser_v8.blend"
+    blend_path = scene_dir / "laser_slotted_liner_teaser_v9.blend"
     bpy.ops.wm.save_as_mainfile(filepath=str(blend_path))
 
     rendered_files: dict[str, dict] = {}
@@ -1467,9 +1448,9 @@ def main() -> None:
         "audit": audit,
         "renders": rendered_files,
     }
-    receipt_path = out_dir / "v8_lookdev_receipt.json"
+    receipt_path = out_dir / "v9_lookdev_receipt.json"
     receipt_path.write_text(json.dumps(receipt, indent=2), encoding="utf-8")
-    print("LOOKDEV_V8_DONE", json.dumps(receipt, indent=2))
+    print("LOOKDEV_V9_DONE", json.dumps(receipt, indent=2))
 
 
 if __name__ == "__main__":

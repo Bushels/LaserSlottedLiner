@@ -88,13 +88,13 @@ def build_hook_vf_filter() -> str:
 
 def main() -> None:
     t0 = time.time()
-    job_dir = Path(os.environ.get("SLOTTED_JOB_DIR", r"C:\AI-Station\jobs\slotted-liner-teaser-v8"))
+    job_dir = Path(os.environ.get("SLOTTED_JOB_DIR", r"C:\AI-Station\jobs\slotted-liner-teaser-v9"))
     frames_dir = job_dir / "frames"
     uhd_dir = job_dir / "uhd_4k"
     frames_dir.mkdir(parents=True, exist_ok=True)
     uhd_dir.mkdir(parents=True, exist_ok=True)
 
-    # 1. Build verified Look-Dev v8 ("Director's Cut") scene
+    # 1. Build verified Look-Dev v9 ("Cold-Precision Surgical Cut") scene
     scene = teaser.clear_and_init_scene()
     mats = teaser.build_materials()
     pipe_objs = teaser.build_pipe_and_red_ends(mats)
@@ -115,22 +115,22 @@ def main() -> None:
     scene.frame_set(45)
     audit = teaser.audit_scene_geometry(scene, cam, pipe_objs, head_objs)
 
-    blend_path = job_dir / "laser_slotted_liner_teaser_v8_prod.blend"
+    blend_path = job_dir / "laser_slotted_liner_teaser_v9_prod.blend"
     bpy.ops.wm.save_as_mainfile(filepath=str(blend_path))
 
     # 3. Render 160-frame 1080p sequence:
     # - Frame 1: Stillness reference frame (path-traced)
-    # - Frames 2..63: Locked stillness pause (exact hold of Frame 1)
-    # - Frames 64..67: 0.17s pre-strike optical lock-on micro-cue (path-traced)
-    # - Frames 68..75: 0.29s surgical 12 kW laser flash + downward spark jet (path-traced)
-    # - Frames 76..112: Top-spine thermal kerf scar decay (path-traced)
-    # - Frames 113..160: Post-cut stillness hold (exact hold of Frame 112)
+    # - Frames 2..64: Locked stillness pause (exact hold of Frame 1)
+    # - Frames 65..67: 0.12s pre-strike optical lock-on micro-cue (path-traced)
+    # - Frames 68..72: 0.17s ultra-fast cold surgical 12 kW laser flash (path-traced)
+    # - Frames 73..96: Cold assist-gas dissipation & post-cut settle (path-traced)
+    # - Frames 97..160: Post-cut cold stillness hold (exact hold of Frame 96)
     frame_records = []
     pathtraced_count = 0
     for f in range(teaser.FRAME_START, teaser.FRAME_END + 1):
         f_path = frames_dir / f"frame_{f:04d}.png"
-        is_hold_early = 2 <= f <= 63
-        is_hold_late = 113 <= f <= 160
+        is_hold_early = 2 <= f <= 64
+        is_hold_late = 97 <= f <= 160
         if not (is_hold_early or is_hold_late):
             pathtraced_count += 1
 
@@ -139,7 +139,7 @@ def main() -> None:
                 src_hold = frames_dir / "frame_0001.png"
                 shutil.copy2(src_hold, f_path)
             elif is_hold_late:
-                src_hold = frames_dir / "frame_0112.png"
+                src_hold = frames_dir / "frame_0096.png"
                 shutil.copy2(src_hold, f_path)
             else:
                 scene.frame_set(f)
@@ -155,19 +155,19 @@ def main() -> None:
                 "sha256": digest,
             }
         )
-        if f in (1, 45, 64, 66, 68, 70, 72, 75, 76, 84, 92, 105, 112, 160):
+        if f in (1, 45, 65, 67, 68, 70, 72, 73, 76, 82, 90, 96, 160):
             elapsed = time.time() - t0
             print(f"[SEQ] Frame {f:03d}/160 done ({elapsed:.1f}s elapsed) -> {digest[:10]}", flush=True)
 
-    # Verify Gate 1b across the three story beats (f045, f072, f092)
+    # Verify Gate 1b across the three story beats (f045, f070, f082)
     beat_hashes = {
         "beat1": frame_records[44]["sha256"],
-        "beat2": frame_records[71]["sha256"],
-        "beat3": frame_records[91]["sha256"],
+        "beat2": frame_records[69]["sha256"],
+        "beat3": frame_records[81]["sha256"],
     }
     assert len(set(beat_hashes.values())) == 3, f"Gate 1b FAILED on beat hashes: {beat_hashes}"
 
-    # 4. Render 4K UHD (3840x2160) Hero Stills for Beat 1 (f045), Beat 2 (f072), Beat 3 (f092)
+    # 4. Render 4K UHD (3840x2160) Hero Stills for Beat 1 (f045), Beat 2 (f070), Beat 3 (f082)
     scene.render.resolution_x = 3840
     scene.render.resolution_y = 2160
     scene.cycles.samples = 96
@@ -190,7 +190,7 @@ def main() -> None:
     ffmpeg_bin = find_ffmpeg()
 
     # 5a. Clean Master 16:9 Teaser MP4 (no text)
-    mp4_clean = job_dir / "laser_slotted_liner_teaser_v8_clean_1080p.mp4"
+    mp4_clean = job_dir / "laser_slotted_liner_teaser_v9_clean_1080p.mp4"
     cmd_clean = [
         ffmpeg_bin,
         "-y",
@@ -213,7 +213,7 @@ def main() -> None:
     subprocess.run(cmd_clean, check=True)
 
     # 5b. Hook Master 16:9 Teaser MP4 (with minimalist end-card hook via FFmpeg drawtext)
-    mp4_hook = job_dir / "laser_slotted_liner_teaser_v8_hook_1080p.mp4"
+    mp4_hook = job_dir / "laser_slotted_liner_teaser_v9_hook_1080p.mp4"
     hook_vf = build_hook_vf_filter()
     cmd_hook = [
         ffmpeg_bin,
@@ -239,7 +239,7 @@ def main() -> None:
     subprocess.run(cmd_hook, check=True)
 
     # 5c. 2.5x Center Scrub Zoom-In MP4 ("What the viewer sees when they scrub & zoom in on the strike")
-    mp4_zoom = job_dir / "laser_slotted_liner_center_zoom_v8.mp4"
+    mp4_zoom = job_dir / "laser_slotted_liner_center_zoom_v9.mp4"
     cmd_zoom = [
         ffmpeg_bin,
         "-y",
@@ -264,8 +264,8 @@ def main() -> None:
     subprocess.run(cmd_zoom, check=True)
 
     # 5d. Also crop a 16:9 1920x1080 center inspection still from the 4K Beat 2 render using FFmpeg
-    uhd_beat2 = uhd_dir / "beat2_laser_strike_4k_f072.png"
-    zoom_still_4k = uhd_dir / "beat2_center_scrub_zoom_from_4k_f072.png"
+    uhd_beat2 = uhd_dir / "beat2_laser_strike_4k_f070.png"
+    zoom_still_4k = uhd_dir / "beat2_center_scrub_zoom_from_4k_f070.png"
     cmd_crop_4k = [
         ffmpeg_bin,
         "-y",
